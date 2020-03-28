@@ -56,17 +56,20 @@ async function run() {
       item = deliveryDates[i];
       console.log("Opening " + item.url + " [" + item.date + "]");
       await page.goto(item.url);
-      console.log("Taking screenshot");
-      screenshotPath = dir + "/tesco-delivery" + i + ".png";
-      await page.screenshot({
-        path: screenshotPath,
-        fullPage: true
-      });
+
       //if (i<2) {
       if (html.includes("No slots available! Try another day")) {
         console.log("No slots");
       } else {
         console.log("SLOTS AVAILABLE!!!");
+
+        // Take a screenshot
+        console.log("Taking screenshot");
+        screenshotPath = dir + "/tesco-delivery" + i + ".png";
+        await page.screenshot({
+          path: screenshotPath,
+          fullPage: true
+        });
 
         // Send push notification
 
