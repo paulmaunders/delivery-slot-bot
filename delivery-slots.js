@@ -11,13 +11,6 @@ const config = ini.parse(fs.readFileSync("./config.ini", "utf-8"));
 var executiontime = Date.now();
 console.log(executiontime);
 
-// Create screenshot folder if it doesn't exist
-var dir = config.output_dir + "/" + executiontime;
-
-if (!fs.existsSync(dir)) {
-  shell.mkdir("-p", dir);
-}
-
 // Check for delivery slot
 
 async function run() {
@@ -33,9 +26,7 @@ async function run() {
     await page.goto("https://secure.tesco.com/account/en-GB/login?from=/");
     await page.type("#username", config.tesco_username);
     await page.type("#password", config.tesco_password);
-    await page.screenshot({ path: dir + "/tesco-login.png" });
     await page.click("#sign-in-form > button");
-    await page.screenshot({ path: dir + "/tesco-logged-in.png" });
     await page.goto("https://www.tesco.com/groceries/en-GB/slots/delivery");
 
     var html = await page.content();
@@ -62,6 +53,13 @@ async function run() {
         console.log("No slots");
       } else {
         console.log("SLOTS AVAILABLE!!!");
+
+        // Create screenshot folder if it doesn't exist
+        var dir = config.output_dir + "/" + executiontime;
+
+        if (!fs.existsSync(dir)) {
+          shell.mkdir("-p", dir);
+        }
 
         // Take a screenshot
         console.log("Taking screenshot");
