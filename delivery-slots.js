@@ -9,7 +9,8 @@ const config = ini.parse(fs.readFileSync("./config.ini", "utf-8"));
 
 // Log time
 var executiontime = Date.now();
-console.log(executiontime);
+var date = new Date(executiontime);
+console.log(executiontime + ' ' + date.toUTCString());
 
 // Check for delivery slot
 
