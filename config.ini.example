@@ -1,0 +1,14 @@
+; Example config.ini for Delivery Slot Bot
+output_dir = /Users/paulmaunders/Desktop/tesco
+
+; Enter your login details here
+tesco_username = email@example.com
+tesco_password = password
+
+; Set Pushover API token and user token(s) where you'd like to receive push notifications
+; Download the Pushover app on your device and create an account
+; Login in to your account at pushover.net and create an application/API token
+pushover_api_token = apitoken 
+; List the user keys who wish to receive alerts. If you only need 1, delete the second line.
+pushover_notification_users[] = user1key
+pushover_notification_users[] = user2key 

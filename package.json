@@ -1,0 +1,14 @@
+{
+  "dependencies": {
+    "ini": "^1.3.5",
+    "puppeteer": "^1.8.0",
+    "pushover-notifications": "^1.2.2"
+  },
+  "name": "delivery-slot-bot",
+  "version": "1.0.0",
+  "description": "Tool to find supermarket online delivery slots",
+  "main": "delivery-slots.js",
+  "author": "Paul Maunders",
+  "license": "MIT",
+  "private": false
+}
