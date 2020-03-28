@@ -1,5 +1,5 @@
 ; Example config.ini for Delivery Slot Bot
-output_dir = /Users/paulmaunders/Desktop/tesco
+output_dir = /tmp/delivery-slot-bot
 
 ; Enter your login details here
 tesco_username = email@example.com
