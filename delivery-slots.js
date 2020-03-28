@@ -1,6 +1,7 @@
 const puppeteer = require("puppeteer");
 const ini = require("ini");
 var fs = require("fs");
+var shell = require("shelljs");
 var Push = require("pushover-notifications");
 
 // Read config
@@ -14,7 +15,7 @@ console.log(executiontime);
 var dir = config.output_dir + "/" + executiontime;
 
 if (!fs.existsSync(dir)) {
-  fs.mkdirSync(dir);
+  shell.mkdir("-p", dir);
 }
 
 // Check for delivery slot
@@ -56,7 +57,7 @@ async function run() {
       console.log("Opening " + item.url + " [" + item.date + "]");
       await page.goto(item.url);
       console.log("Taking screenshot");
-      screenshotPath = dir + "/tesco-delivery" + i + ".png"
+      screenshotPath = dir + "/tesco-delivery" + i + ".png";
       await page.screenshot({
         path: screenshotPath,
         fullPage: true
@@ -82,7 +83,11 @@ async function run() {
           // see test/test_img.js for more examples of attaching images
         };
 
-        for (var i = 0, l = config.pushover_notification_users.length; i < l; i++) {
+        for (
+          var i = 0, l = config.pushover_notification_users.length;
+          i < l;
+          i++
+        ) {
           msg.user = config.pushover_notification_users[i];
           // token can be overwritten as well.
 
@@ -94,8 +99,6 @@ async function run() {
             console.log(result);
           });
         }
-
-
       }
     }
   } catch (err) {
