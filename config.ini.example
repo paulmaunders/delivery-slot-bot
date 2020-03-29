@@ -1,6 +1,9 @@
 ; Example config.ini for Delivery Slot Bot
 output_dir = /tmp/delivery-slot-bot
 
+; Optional internal cron schedule. If not supplied, runs just once
+cron = '*/5 * * * *'
+
 ; Enter your login details here
 tesco_username = email@example.com
 tesco_password = password

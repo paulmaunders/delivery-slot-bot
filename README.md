@@ -1,9 +1,12 @@
 # delivery-slot-bot
 A puppeteer based bot to monitor supermarket online delivery slots. Currently it only works with Tesco.net and uses Pushover.net to send push notifications to your phone.
 ## Installation and configuration
-Clone this repository, and install depdencies using yarn
+Clone this repository
   
     git clone git@github.com:paulmaunders/delivery-slot-bot.git 
+
+If not running the application via docker, install the dependencies using yarn
+
     cd delivery-slot-bot
     npm install yarn -g
     yarn install
@@ -24,9 +27,13 @@ To receive push notifications, you need to create an account with [pushover.net]
 * pushover_notification_users[] - Array of Pushover user keys who wish to receive push notifications
 
 ## Usage
-Run delivery-slot.js with node from inside the project folder
+Run from inside the project folder
 
-    node delivery-slots.js
+    yarn start
+
+Or alternatively via docker
+
+    docker-compose up
     
 The script should output a list of dates, and whether any slots are available, e.g. 
 
@@ -39,8 +46,12 @@ The script should output a list of dates, and whether any slots are available, e
     No slots
     
 If a slot is found, it will send an alert to your device with a screenshot of the page so you can confirm.
+
 ## Automation
-Running the script by hand doesn't save much time, so you may want to add it to your crontab
+
+The script by default runs its own cron based on the `cron` setting of the config.ini.
+
+You can, however, schedule it instead externally e.g. via crontab:
 
     crontab -e
     

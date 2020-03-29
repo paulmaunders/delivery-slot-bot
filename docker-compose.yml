@@ -1,0 +1,26 @@
+version: '3.7'
+services:
+  app:
+    command: sh -c 'yarn && yarn start'
+    depends_on: 
+      - chrome
+    environment:
+      PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 1
+      PUPPETEER_BROWSER_WS_ENDPOINT: ws://chrome:3000
+    image: node:12.16
+    restart: unless-stopped
+    volumes: 
+      - type: bind
+        source: ./
+        target: /app
+      - type: volume
+        source: node_modules
+        target: /app/node_modules
+    working_dir: /app
+
+  chrome:
+    image: browserless/chrome
+    restart: unless-stopped
+
+volumes:
+  node_modules: ~

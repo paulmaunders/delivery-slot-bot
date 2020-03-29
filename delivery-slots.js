@@ -1,21 +1,24 @@
-const puppeteer = require("puppeteer");
+const fs = require("fs");
 const ini = require("ini");
-var fs = require("fs");
-var shell = require("shelljs");
-var Push = require("pushover-notifications");
+const schedule = require("node-schedule");
+const puppeteer = require("puppeteer");
+const Push = require("pushover-notifications");
+const shell = require("shelljs");
 
 // Read config
 const config = ini.parse(fs.readFileSync("./config.ini", "utf-8"));
 
-// Log time
-var executiontime = Date.now();
-var date = new Date(executiontime);
-console.log(executiontime + ' ' + date.toUTCString());
+function getBrowser() {
+  if (process.env.PUPPETEER_BROWSER_WS_ENDPOINT) {
+    return puppeteer.connect({ browserWSEndpoint: process.env.PUPPETEER_BROWSER_WS_ENDPOINT })
+  }
+  return puppeteer.launch();
+}
 
 // Check for delivery slot
 
 async function run() {
-  const browser = await puppeteer.launch();
+  const browser = await getBrowser();
 
   try {
     // TESCO
@@ -112,4 +115,13 @@ async function run() {
   }
 }
 
-run();
+if (config.cron) {
+  schedule.scheduleJob(config.cron, () => run());
+} else {
+  // Log time
+  const executiontime = Date.now();
+  const date = new Date(executiontime);
+  console.log(executiontime + ' ' + date.toUTCString());
+
+  run();
+}
