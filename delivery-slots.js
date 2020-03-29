@@ -86,11 +86,11 @@ async function run() {
         };
 
         for (
-          var i = 0, l = config.pushover_notification_users.length;
-          i < l;
-          i++
+          var idx = 0, l = config.pushover_notification_users.length;
+          idx < l;
+          idx++
         ) {
-          msg.user = config.pushover_notification_users[i];
+          msg.user = config.pushover_notification_users[idx];
           // token can be overwritten as well.
 
           p.send(msg, function(err, result) {
