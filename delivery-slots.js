@@ -47,8 +47,7 @@ async function run() {
     // console.log(deliveryDates);
 
     // Loop through delivery pages and check if slots are available
-    for (var i = 0, len = deliveryDates.length; i < len; i++) {
-      item = deliveryDates[i];
+    for (const [deliveryIndex, item] of deliveryDates.entries()) {
       console.log("Opening " + item.url + " [" + item.date + "]");
       await page.goto(item.url);
 
@@ -69,7 +68,7 @@ async function run() {
 
         // Take a screenshot
         console.log("Taking screenshot");
-        screenshotPath = dir + "/tesco-delivery" + i + ".png";
+        screenshotPath = dir + "/tesco-delivery" + deliveryIndex + ".png";
         await page.screenshot({
           path: screenshotPath,
           fullPage: true
@@ -90,12 +89,8 @@ async function run() {
           // see test/test_img.js for more examples of attaching images
         };
 
-        for (
-          var idx = 0, l = config.pushover_notification_users.length;
-          idx < l;
-          idx++
-        ) {
-          msg.user = config.pushover_notification_users[idx];
+        for (let pushover_user of config.pushover_notification_users) {
+          msg.user = pushover_user;
           // token can be overwritten as well.
 
           p.send(msg, function(err, result) {
