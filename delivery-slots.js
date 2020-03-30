@@ -49,6 +49,8 @@ async function run() {
       console.log("Opening " + item.url + " [" + item.date + "]");
       await page.goto(item.url);
 
+      html = await page.content();
+
       //if (i<2) {
       if (html.includes("No slots available! Try another day")) {
         console.log("No slots");
