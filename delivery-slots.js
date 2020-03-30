@@ -4,6 +4,7 @@ const schedule = require("node-schedule");
 const puppeteer = require("puppeteer");
 const Push = require("pushover-notifications");
 const shell = require("shelljs");
+const yargs = require('yargs');
 
 // Read config
 const config = ini.parse(fs.readFileSync("./config.ini", "utf-8"));
@@ -19,6 +20,11 @@ function getBrowser() {
 
 async function run() {
   const browser = await getBrowser();
+
+  // Log time
+  const executiontime = Date.now();
+  const date = new Date(executiontime);
+  console.log(executiontime + ' ' + date.toUTCString());
 
   try {
     // TESCO
@@ -110,13 +116,18 @@ async function run() {
   }
 }
 
-if (config.cron) {
-  schedule.scheduleJob(config.cron, () => run());
-} else {
-  // Log time
-  const executiontime = Date.now();
-  const date = new Date(executiontime);
-  console.log(executiontime + ' ' + date.toUTCString());
-
-  run();
-}
+yargs
+    .command(
+      'cron',
+      'Runs with the internal cron scheduler',
+      {},
+      () => schedule.scheduleJob(config.cron, () => run())
+    )
+    .command(
+      '*',
+      'Runs one-off',
+      {},
+      () => run()
+    )
+    .help()
+    .argv;

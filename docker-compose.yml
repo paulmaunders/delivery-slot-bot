@@ -1,7 +1,7 @@
 version: '3.7'
 services:
   app:
-    command: sh -c 'yarn && yarn start'
+    command: sh -c 'yarn && yarn start cron'
     depends_on: 
       - chrome
     environment:

@@ -29,7 +29,10 @@ To receive push notifications, you need to create an account with [pushover.net]
 ## Usage
 Run from inside the project folder
 
+    # one-off run
     yarn start
+    # continual running with the internal cron scheduler
+    yarn start cron
 
 Or alternatively via docker
 
