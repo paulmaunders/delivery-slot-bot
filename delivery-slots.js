@@ -39,15 +39,10 @@ async function run() {
     await page.click("#sign-in-form > button");
     await page.goto("https://www.tesco.com/groceries/en-GB/slots/delivery");
 
-    var html = await page.content();
-
     // Look for delivery pages
-    var deliveryDates = await page.$$eval(
+    const deliveryDates = await page.$$eval(
       ".slot-selector--week-tabheader-link",
-      elements =>
-        elements.map(item => {
-          return (itemarray = { date: item.textContent, url: item.href });
-        })
+      elements => elements.map(item => ({ date: item.textContent, url: item.href }))
     );
 
     // console.log(deliveryDates);
@@ -57,7 +52,7 @@ async function run() {
       console.log("Opening " + item.url + " [" + item.date + "]");
       await page.goto(item.url);
 
-      html = await page.content();
+      const html = await page.content();
 
       //if (i<2) {
       if (html.includes("No slots available! Try another day")) {
@@ -66,7 +61,7 @@ async function run() {
         console.log("SLOTS AVAILABLE!!!");
 
         // Create screenshot folder if it doesn't exist
-        var dir = config.output_dir + "/" + executiontime;
+        const dir = config.output_dir + "/" + executiontime;
 
         if (!fs.existsSync(dir)) {
           shell.mkdir("-p", dir);
@@ -74,7 +69,7 @@ async function run() {
 
         // Take a screenshot
         console.log("Taking screenshot");
-        screenshotPath = dir + "/tesco-delivery" + deliveryIndex + ".png";
+        const screenshotPath = dir + "/tesco-delivery" + deliveryIndex + ".png";
         await page.screenshot({
           path: screenshotPath,
           fullPage: true
@@ -82,11 +77,11 @@ async function run() {
 
         // Send push notification
 
-        var p = new Push({
+        const p = new Push({
           token: config.pushover_api_token
         });
 
-        var msg = {
+        const msg = {
           message: "Delivery slots available between " + item.date,
           title: "Delivery Slot Bot",
           sound: "magic", // optional
@@ -95,11 +90,8 @@ async function run() {
           // see test/test_img.js for more examples of attaching images
         };
 
-        for (let pushover_user of config.pushover_notification_users) {
-          msg.user = pushover_user;
-          // token can be overwritten as well.
-
-          p.send(msg, function(err, result) {
+        for (const user of config.pushover_notification_users) {
+          p.send({...msg, user}, function(err, result) {
             if (err) {
               throw err;
             }
