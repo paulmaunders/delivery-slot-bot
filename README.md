@@ -21,7 +21,7 @@ Set the following values:
 * tesco_username - Your username for tesco.net 
 * tesco_password - Your password for tesco.net
 
-To receive push notifications, you need to create an account with [pushover.net](pushover.net) and install the Pushover app on your phone.
+To receive push notifications, you need to create an account with [pushover.net](https://pushover.net) and install the Pushover app on your phone.
 
 * pushover_api_token - API token from Pushover
 * pushover_notification_users[] - Array of Pushover user keys who wish to receive push notifications
