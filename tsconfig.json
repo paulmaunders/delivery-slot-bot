@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist/",
+    "strictNullChecks": true,
+    "esModuleInterop": true,
+    "module": "commonjs",
+    "target": "es6",
+    "types": ["node"],
+  },
+  "include": [
+    "./src/"
+  ]
+}

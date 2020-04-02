@@ -1,22 +1,23 @@
+// @ts-check
 const fs = require("fs");
 const ini = require("ini");
 const schedule = require("node-schedule");
 const puppeteer = require("puppeteer");
 const Push = require("pushover-notifications");
 const shell = require("shelljs");
-const yargs = require('yargs');
+const yargs = require("yargs");
 
 // Read config
 const config = ini.parse(fs.readFileSync("./config.ini", "utf-8"));
 
 function getBrowser() {
   if (process.env.PUPPETEER_BROWSER_WS_ENDPOINT) {
-    return puppeteer.connect({ browserWSEndpoint: process.env.PUPPETEER_BROWSER_WS_ENDPOINT })
+    return puppeteer.connect({
+      browserWSEndpoint: process.env.PUPPETEER_BROWSER_WS_ENDPOINT,
+    });
   }
   return puppeteer.launch();
 }
-
-// Check for delivery slot
 
 async function run() {
   const browser = await getBrowser();
@@ -24,7 +25,7 @@ async function run() {
   // Log time
   const executiontime = Date.now();
   const date = new Date(executiontime);
-  console.log(executiontime + ' ' + date.toUTCString());
+  console.log(executiontime + " " + date.toUTCString());
 
   try {
     // TESCO
@@ -42,7 +43,11 @@ async function run() {
     // Look for delivery pages
     const deliveryDates = await page.$$eval(
       ".slot-selector--week-tabheader-link",
-      elements => elements.map(item => ({ date: item.textContent, url: item.href }))
+      (elements) =>
+        elements.map((item) => ({
+          date: item.textContent,
+          url: item["href"],
+        }))
     );
 
     // console.log(deliveryDates);
@@ -54,7 +59,6 @@ async function run() {
 
       const html = await page.content();
 
-      //if (i<2) {
       if (html.includes("No slots available! Try another day")) {
         console.log("No slots");
       } else {
@@ -72,13 +76,13 @@ async function run() {
         const screenshotPath = dir + "/tesco-delivery" + deliveryIndex + ".png";
         await page.screenshot({
           path: screenshotPath,
-          fullPage: true
+          fullPage: true,
         });
 
         // Send push notification
 
         const p = new Push({
-          token: config.pushover_api_token
+          token: config.pushover_api_token,
         });
 
         const msg = {
@@ -86,12 +90,12 @@ async function run() {
           title: "Delivery Slot Bot",
           sound: "magic", // optional
           priority: 1, // optional,
-          file: screenshotPath // optional
+          file: screenshotPath, // optional
           // see test/test_img.js for more examples of attaching images
         };
 
         for (const user of config.pushover_notification_users) {
-          p.send({...msg, user}, function(err, result) {
+          p.send({ ...msg, user }, function (err, result) {
             if (err) {
               throw err;
             }
@@ -109,17 +113,8 @@ async function run() {
 }
 
 yargs
-    .command(
-      'cron',
-      'Runs with the internal cron scheduler',
-      {},
-      () => schedule.scheduleJob(config.cron, () => run())
-    )
-    .command(
-      '*',
-      'Runs one-off',
-      {},
-      () => run()
-    )
-    .help()
-    .argv;
+  .command("cron", "Runs with the internal cron scheduler", {}, () =>
+    schedule.scheduleJob(config.cron, () => run())
+  )
+  .command("*", "Runs one-off", {}, () => run())
+  .help().argv;
