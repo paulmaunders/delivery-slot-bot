@@ -19,6 +19,25 @@ function getBrowser() {
   return puppeteer.launch();
 }
 
+async function assertResponseOk(response) {
+  if (response.ok()) {
+    return;
+  }
+  throw {
+    message: `error: unexpected http response status ${response.status()} ${response.statusText()} with body:\n${await response.text()}\n`,
+  };
+}
+
+async function goto(page, url) {
+  await assertResponseOk(await page.goto(url));
+}
+
+async function clickAndWaitForNavigation(page, selector) {
+  await assertResponseOk(
+    (await Promise.all([page.waitForNavigation(), page.click(selector)]))[0]
+  );
+}
+
 async function run() {
   const browser = await getBrowser();
 
@@ -34,11 +53,11 @@ async function run() {
     await page.setViewport({ width: 1366, height: 768 });
 
     // Login
-    await page.goto("https://secure.tesco.com/account/en-GB/login?from=/");
+    await goto(page, "https://secure.tesco.com/account/en-GB/login?from=/");
     await page.type("#username", config.tesco_username);
     await page.type("#password", config.tesco_password);
-    await page.click("#sign-in-form > button");
-    await page.goto("https://www.tesco.com/groceries/en-GB/slots/delivery");
+    await clickAndWaitForNavigation(page, "#sign-in-form > button");
+    await goto(page, "https://www.tesco.com/groceries/en-GB/slots/delivery");
 
     // Look for delivery pages
     const deliveryDates = await page.$$eval(
@@ -55,7 +74,7 @@ async function run() {
     // Loop through delivery pages and check if slots are available
     for (const [deliveryIndex, item] of deliveryDates.entries()) {
       console.log("Opening " + item.url + " [" + item.date + "]");
-      await page.goto(item.url);
+      await goto(page, item.url);
 
       const html = await page.content();
 
