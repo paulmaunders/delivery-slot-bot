@@ -3,7 +3,7 @@ A puppeteer based bot to monitor supermarket online delivery slots. Currently it
 ## Installation and configuration
 Clone this repository
   
-    git clone git@github.com:paulmaunders/delivery-slot-bot.git 
+    git clone https://github.com/paulmaunders/delivery-slot-bot.git
 
 If not running the application via docker, install the dependencies using yarn
 
