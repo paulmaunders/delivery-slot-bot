@@ -10,6 +10,7 @@
   "scripts": {
     "lint": "eslint 'src/{**/,}*.js'",
     "lint:fix": "eslint --fix 'src/{**/,}*.js'",
+    "test": "yarn lint",
     "start": "node ./src/index.js"
   },
   "name": "delivery-slot-bot",
