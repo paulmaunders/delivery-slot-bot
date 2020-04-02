@@ -1,5 +1,6 @@
-node_modules
-screenshots
-.DS_Store
-.vscode
-config.ini
+/.DS_Store
+/.vscode
+/config.ini
+/dist
+/node_modules
+/screenshots
