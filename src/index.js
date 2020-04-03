@@ -10,6 +10,9 @@ const yargs = require("yargs");
 // Read config
 const config = ini.parse(fs.readFileSync("./config.ini", "utf-8"));
 
+const deliveryUrl = "https://www.tesco.com/groceries/en-GB/slots/delivery";
+const loginUrl = "https://secure.tesco.com/account/en-GB/login";
+
 function getBrowser() {
   if (process.env.PUPPETEER_BROWSER_WS_ENDPOINT) {
     return puppeteer.connect({
@@ -39,7 +42,7 @@ async function clickAndWaitForNavigation(page, selector) {
 }
 
 async function assertLoginSuccess(page) {
-  if (page.url().startsWith("https://secure.tesco.com/account/en-GB/login")) {
+  if (page.url().startsWith(loginUrl)) {
     throw {
       message:
         "error: Auth failed. Please check details are correct in config.ini",
@@ -68,10 +71,10 @@ async function run() {
     }
 
     // optimistically go to delivery page in case of existing user session
-    await goto(page, "https://www.tesco.com/groceries/en-GB/slots/delivery");
+    await goto(page, deliveryUrl);
 
     // login was required
-    if (page.url().startsWith("https://secure.tesco.com/account/en-GB/login")) {
+    if (page.url().startsWith(loginUrl)) {
       console.log("Logging in with new user session");
       await page.type("#username", config.tesco_username);
       await page.type("#password", config.tesco_password);
@@ -85,13 +88,9 @@ async function run() {
     }
 
     // login should redirect to delivery, but check just in case it hasn't
-    if (
-      !page
-        .url()
-        .startsWith("https://www.tesco.com/groceries/en-GB/slots/delivery")
-    ) {
+    if (!page.url().startsWith(deliveryUrl)) {
       console.log("Revisiting delivery page");
-      await goto(page, "https://www.tesco.com/groceries/en-GB/slots/delivery");
+      await goto(page, deliveryUrl);
     }
 
     // Look for delivery pages
