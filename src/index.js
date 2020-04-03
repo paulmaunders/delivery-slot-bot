@@ -38,6 +38,22 @@ async function clickAndWaitForNavigation(page, selector) {
   );
 }
 
+async function assertLoginSuccess(page) {
+  const html = await page.content();
+  if (html.includes("Reserve a slot for either home delivery or collection")) {
+    return;
+  } else if (
+    html.includes(
+      "Unfortunately we do not recognise those details. Please try again"
+    )
+  ) {
+    throw {
+      message:
+        "error: Auth failed. Please check details are correct in config.ini",
+    };
+  }
+}
+
 async function run() {
   const browser = await getBrowser();
 
@@ -57,6 +73,7 @@ async function run() {
     await page.type("#username", config.tesco_username);
     await page.type("#password", config.tesco_password);
     await clickAndWaitForNavigation(page, "#sign-in-form > button");
+    await assertLoginSuccess(page);
     await goto(page, "https://www.tesco.com/groceries/en-GB/slots/delivery");
 
     // Look for delivery pages
