@@ -140,7 +140,7 @@ async function run() {
     // console.log(collectionDates);
 
     // Loop through collection pages and check if slots are available
-    for (const [collectionIndex, item] of  collectionDates.entries()) {
+    for (const [collectionIndex, item] of collectionDates.entries()) {
       console.log("Opening " + item.url + " [" + item.date + "]");
       await goto(page, item.url);
 
@@ -160,7 +160,8 @@ async function run() {
 
         // Take a screenshot
         console.log("Taking screenshot");
-        const screenshotPath = dir + "/tesco-collection" + collectionIndex + ".png";
+        const screenshotPath =
+          dir + "/tesco-collection" + collectionIndex + ".png";
         await page.screenshot({
           path: screenshotPath,
           fullPage: true,
