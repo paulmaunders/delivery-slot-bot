@@ -69,7 +69,7 @@ async function run() {
         }))
     );
 
-    //console.log(deliveryDates);
+    // console.log(deliveryDates);
 
     // Loop through delivery pages and check if slots are available
     for (const [deliveryIndex, item] of deliveryDates.entries()) {
@@ -137,7 +137,7 @@ async function run() {
         }))
     );
 
-    //console.log(collectionDates);
+    // console.log(collectionDates);
 
     // Loop through collection pages and check if slots are available
     for (const [collectionIndex, item] of  collectionDates.entries()) {
@@ -198,8 +198,6 @@ async function run() {
     await browser.close();
   }
 }
-
-
 
 yargs
   .command("cron", "Runs with the internal cron scheduler", {}, () =>
