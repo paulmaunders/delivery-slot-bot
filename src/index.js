@@ -39,20 +39,15 @@ async function clickAndWaitForNavigation(page, selector) {
 }
 
 async function assertLoginSuccess(page) {
-  const html = await page.content();
-  if (html.includes("Reserve a slot for either home delivery or collection")) {
-    return;
-  } else if (
-    html.includes(
-      "Unfortunately we do not recognise those details. Please try again"
-    )
-  ) {
+  if (page.url().startsWith("https://secure.tesco.com/account/en-GB/login")) {
     throw {
       message:
         "error: Auth failed. Please check details are correct in config.ini",
     };
   }
 }
+
+let cookieStore = null;
 
 async function run() {
   const browser = await getBrowser();
@@ -68,13 +63,36 @@ async function run() {
     const page = await browser.newPage();
     await page.setViewport({ width: 1366, height: 768 });
 
-    // Login
-    await goto(page, "https://secure.tesco.com/account/en-GB/login?from=/");
-    await page.type("#username", config.tesco_username);
-    await page.type("#password", config.tesco_password);
-    await clickAndWaitForNavigation(page, "#sign-in-form > button");
-    await assertLoginSuccess(page);
+    if (cookieStore) {
+      await page.setCookie(...cookieStore);
+    }
+
+    // optimistically go to delivery page in case of existing user session
     await goto(page, "https://www.tesco.com/groceries/en-GB/slots/delivery");
+
+    // login was required
+    if (page.url().startsWith("https://secure.tesco.com/account/en-GB/login")) {
+      console.log("Logging in with new user session");
+      await page.type("#username", config.tesco_username);
+      await page.type("#password", config.tesco_password);
+      await clickAndWaitForNavigation(page, "#sign-in-form > button");
+      await assertLoginSuccess(page);
+
+      // keep cookies for next run
+      cookieStore = await page.cookies();
+    } else {
+      console.log("Already logged in");
+    }
+
+    // login should redirect to delivery, but check just in case it hasn't
+    if (
+      !page
+        .url()
+        .startsWith("https://www.tesco.com/groceries/en-GB/slots/delivery")
+    ) {
+      console.log("Revisiting delivery page");
+      await goto(page, "https://www.tesco.com/groceries/en-GB/slots/delivery");
+    }
 
     // Look for delivery pages
     const deliveryDates = await page.$$eval(
@@ -85,8 +103,6 @@ async function run() {
           url: item["href"],
         }))
     );
-
-    // console.log(deliveryDates);
 
     // Loop through delivery pages and check if slots are available
     for (const [deliveryIndex, item] of deliveryDates.entries()) {
