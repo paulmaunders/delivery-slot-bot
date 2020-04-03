@@ -125,71 +125,78 @@ async function run() {
       }
     }
 
-    await goto(page, "https://www.tesco.com/groceries/en-GB/slots/collection");
+    if (config.click_collect === true) {
+      console.log("Click and Collect check enabled");
 
-    // Look for collection pages
-    const collectionDates = await page.$$eval(
-      ".slot-selector--week-tabheader-link",
-      (elements) =>
-        elements.map((item) => ({
-          date: item.textContent,
-          url: item["href"],
-        }))
-    );
+      await goto(
+        page,
+        "https://www.tesco.com/groceries/en-GB/slots/collection"
+      );
 
-    // console.log(collectionDates);
+      // Look for collection pages
+      const collectionDates = await page.$$eval(
+        ".slot-selector--week-tabheader-link",
+        (elements) =>
+          elements.map((item) => ({
+            date: item.textContent,
+            url: item["href"],
+          }))
+      );
 
-    // Loop through collection pages and check if slots are available
-    for (const [collectionIndex, item] of collectionDates.entries()) {
-      console.log("Opening " + item.url + " [" + item.date + "]");
-      await goto(page, item.url);
+      console.log(collectionDates);
 
-      const html = await page.content();
+      // Loop through collection pages and check if slots are available
+      for (const [collectionIndex, item] of collectionDates.entries()) {
+        console.log("Opening " + item.url + " [" + item.date + "]");
+        await goto(page, item.url);
 
-      if (html.includes("No slots available! Try another day")) {
-        console.log("No slots");
-      } else {
-        console.log("SLOTS AVAILABLE!!!");
+        const html = await page.content();
 
-        // Create screenshot folder if it doesn't exist
-        const dir = config.output_dir + "/" + executiontime;
+        if (html.includes("No slots available! Try another day")) {
+          console.log("No slots");
+        } else {
+          console.log("SLOTS AVAILABLE!!!");
 
-        if (!fs.existsSync(dir)) {
-          shell.mkdir("-p", dir);
-        }
+          // Create screenshot folder if it doesn't exist
+          const dir = config.output_dir + "/" + executiontime;
 
-        // Take a screenshot
-        console.log("Taking screenshot");
-        const screenshotPath =
-          dir + "/tesco-collection" + collectionIndex + ".png";
-        await page.screenshot({
-          path: screenshotPath,
-          fullPage: true,
-        });
+          if (!fs.existsSync(dir)) {
+            shell.mkdir("-p", dir);
+          }
 
-        // Send push notification
-
-        const p = new Push({
-          token: config.pushover_api_token,
-        });
-
-        const msg = {
-          message: "Collection slots available between " + item.date,
-          title: "Delivery Slot Bot",
-          sound: "magic", // optional
-          priority: 1, // optional,
-          file: screenshotPath, // optional
-          // see test/test_img.js for more examples of attaching images
-        };
-
-        for (const user of config.pushover_notification_users) {
-          p.send({ ...msg, user }, function (err, result) {
-            if (err) {
-              throw err;
-            }
-
-            console.log(result);
+          // Take a screenshot
+          console.log("Taking screenshot");
+          const screenshotPath =
+            dir + "/tesco-collection" + collectionIndex + ".png";
+          await page.screenshot({
+            path: screenshotPath,
+            fullPage: true,
           });
+
+          // Send push notification
+
+          const p = new Push({
+            token: config.pushover_api_token,
+          });
+
+          const msg = {
+            message: "Collection slots available between " + item.date,
+            title: "Delivery Slot Bot",
+            sound: "magic", // optional
+            priority: 1, // optional,
+            file: screenshotPath, // optional
+            // see test/test_img.js for more examples of attaching images
+          };
+
+          for (const user of config.pushover_notification_users) {
+            p.send({ ...msg, user }, function (err, result) {
+              if (err) {
+                throw err;
+              }
+
+              console.log(result);
+            });
+          }
         }
       }
     }

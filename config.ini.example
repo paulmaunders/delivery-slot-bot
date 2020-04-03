@@ -1,6 +1,9 @@
 ; Example config.ini for Delivery Slot Bot
 output_dir = /tmp/delivery-slot-bot
 
+; Optional toggle to check for click and collect slots (default is false)
+click_collect = false
+
 ; Optional internal cron schedule. If not supplied, runs just once
 cron = '*/5 * * * *'
 
