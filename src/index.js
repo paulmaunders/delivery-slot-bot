@@ -68,10 +68,15 @@ async function run() {
 
     if (cookieStore) {
       await page.setCookie(...cookieStore);
+      // optimistically go to delivery page in case of existing user session
+      await goto(page, deliveryUrl);
+    } else {
+      // go directly to login, suggesting delivery page after login
+      const loginParams = new URLSearchParams({
+        from: deliveryUrl,
+      });
+      await goto(page, `${loginUrl}?${loginParams.toString()}`);
     }
-
-    // optimistically go to delivery page in case of existing user session
-    await goto(page, deliveryUrl);
 
     // login was required
     if (page.url().startsWith(loginUrl)) {
