@@ -22,6 +22,9 @@ function getBrowser() {
   return puppeteer.launch();
 }
 
+/**
+ * @param {puppeteer.Response} response
+ */
 async function assertResponseOk(response) {
   if (response.ok()) {
     return;
@@ -31,21 +34,33 @@ async function assertResponseOk(response) {
   };
 }
 
+/**
+ * @param {puppeteer.Page} page
+ * @param {string} url
+ */
 async function goto(page, url) {
   await assertResponseOk(await page.goto(url));
 }
 
+/**
+ * @param {puppeteer.Page} page
+ * @param {string} selector
+ */
 async function clickAndWaitForNavigation(page, selector) {
   await assertResponseOk(
     (await Promise.all([page.waitForNavigation(), page.click(selector)]))[0]
   );
 }
 
+/**
+ * @param {puppeteer.Page} page
+ */
 async function assertLoginSuccess(page) {
   if (page.url().startsWith(loginUrl)) {
     throw {
-      message:
-        "error: Auth failed. Please check details are correct in config.ini",
+      message: `error: Auth failed. Please check details are correct in config.ini, ${
+        page.url
+      } ${await page.content()}`,
     };
   }
 }
@@ -70,17 +85,23 @@ async function run() {
       await page.setCookie(...cookieStore);
       // optimistically go to delivery page in case of existing user session
       await goto(page, deliveryUrl);
-    } else {
+
+      // if login was required, reset cookies
+      if (page.url().startsWith(loginUrl)) {
+        const client = await page.target().createCDPSession();
+        await client.send("Network.clearBrowserCookies");
+        cookieStore = null;
+      }
+    }
+
+    if (!cookieStore) {
+      console.log("Logging in with new user session");
+
       // go directly to login, suggesting delivery page after login
       const loginParams = new URLSearchParams({
         from: deliveryUrl,
       });
       await goto(page, `${loginUrl}?${loginParams.toString()}`);
-    }
-
-    // login was required
-    if (page.url().startsWith(loginUrl)) {
-      console.log("Logging in with new user session");
       await page.type("#username", config.tesco_username);
       await page.type("#password", config.tesco_password);
       await clickAndWaitForNavigation(page, "#sign-in-form > button");
