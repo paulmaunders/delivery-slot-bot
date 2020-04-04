@@ -10,6 +10,9 @@ const yargs = require("yargs");
 // Read config
 const config = ini.parse(fs.readFileSync("./config.ini", "utf-8"));
 
+const deliveryUrl = "https://www.tesco.com/groceries/en-GB/slots/delivery";
+const loginUrl = "https://secure.tesco.com/account/en-GB/login";
+
 function getBrowser() {
   if (process.env.PUPPETEER_BROWSER_WS_ENDPOINT) {
     return puppeteer.connect({
@@ -19,6 +22,9 @@ function getBrowser() {
   return puppeteer.launch();
 }
 
+/**
+ * @param {puppeteer.Response} response
+ */
 async function assertResponseOk(response) {
   if (response.ok()) {
     return;
@@ -28,31 +34,38 @@ async function assertResponseOk(response) {
   };
 }
 
+/**
+ * @param {puppeteer.Page} page
+ * @param {string} url
+ */
 async function goto(page, url) {
   await assertResponseOk(await page.goto(url));
 }
 
+/**
+ * @param {puppeteer.Page} page
+ * @param {string} selector
+ */
 async function clickAndWaitForNavigation(page, selector) {
   await assertResponseOk(
     (await Promise.all([page.waitForNavigation(), page.click(selector)]))[0]
   );
 }
 
+/**
+ * @param {puppeteer.Page} page
+ */
 async function assertLoginSuccess(page) {
-  const html = await page.content();
-  if (html.includes("Reserve a slot for either home delivery or collection")) {
-    return;
-  } else if (
-    html.includes(
-      "Unfortunately we do not recognise those details. Please try again"
-    )
-  ) {
+  if (page.url().startsWith(loginUrl)) {
     throw {
-      message:
-        "error: Auth failed. Please check details are correct in config.ini",
+      message: `error: Auth failed. Please check details are correct in config.ini, ${
+        page.url
+      } ${await page.content()}`,
     };
   }
 }
+
+let cookieStore = null;
 
 async function run() {
   const browser = await getBrowser();
@@ -68,13 +81,43 @@ async function run() {
     const page = await browser.newPage();
     await page.setViewport({ width: 1366, height: 768 });
 
-    // Login
-    await goto(page, "https://secure.tesco.com/account/en-GB/login?from=/");
-    await page.type("#username", config.tesco_username);
-    await page.type("#password", config.tesco_password);
-    await clickAndWaitForNavigation(page, "#sign-in-form > button");
-    await assertLoginSuccess(page);
-    await goto(page, "https://www.tesco.com/groceries/en-GB/slots/delivery");
+    if (cookieStore) {
+      await page.setCookie(...cookieStore);
+      // optimistically go to delivery page in case of existing user session
+      await goto(page, deliveryUrl);
+
+      // if login was required, reset cookies
+      if (page.url().startsWith(loginUrl)) {
+        const client = await page.target().createCDPSession();
+        await client.send("Network.clearBrowserCookies");
+        cookieStore = null;
+      }
+    }
+
+    if (!cookieStore) {
+      console.log("Logging in with new user session");
+
+      // go directly to login, suggesting delivery page after login
+      const loginParams = new URLSearchParams({
+        from: deliveryUrl,
+      });
+      await goto(page, `${loginUrl}?${loginParams.toString()}`);
+      await page.type("#username", config.tesco_username);
+      await page.type("#password", config.tesco_password);
+      await clickAndWaitForNavigation(page, "#sign-in-form > button");
+      await assertLoginSuccess(page);
+
+      // keep cookies for next run
+      cookieStore = await page.cookies();
+    } else {
+      console.log("Already logged in");
+    }
+
+    // login should redirect to delivery, but check just in case it hasn't
+    if (!page.url().startsWith(deliveryUrl)) {
+      console.log("Revisiting delivery page");
+      await goto(page, deliveryUrl);
+    }
 
     // Look for delivery pages
     const deliveryDates = await page.$$eval(
@@ -86,16 +129,14 @@ async function run() {
         }))
     );
 
-    // console.log(deliveryDates);
-
     // Loop through delivery pages and check if slots are available
     for (const [deliveryIndex, item] of deliveryDates.entries()) {
       console.log("Opening " + item.url + " [" + item.date + "]");
       await goto(page, item.url);
 
-      const html = await page.content();
+      const deliverySlots = await page.$$(".slot-list--item .available");
 
-      if (html.includes("No slots available! Try another day")) {
+      if (deliverySlots.length == 0) {
         console.log("No slots");
       } else {
         console.log("SLOTS AVAILABLE!!!");
