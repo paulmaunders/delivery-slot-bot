@@ -1,5 +1,5 @@
 # delivery-slot-bot
-A puppeteer based bot to monitor supermarket online delivery slots. Currently it only works with Tesco.net and uses Pushover.net to send push notifications to your phone.
+A puppeteer based bot to monitor supermarket online delivery slots. Currently it only works with Tesco.com and uses Pushover.net to send push notifications to your phone.
 ## Installation and configuration
 Clone this repository
   
