@@ -113,9 +113,9 @@ async function run() {
       console.log("Opening " + item.url + " [" + item.date + "]");
       await goto(page, item.url);
 
-      const html = await page.content();
+      const deliverySlots = await page.$$(".slot-list--item .available");
 
-      if (html.includes("No slots available! Try another day")) {
+      if (deliverySlots.length == 0) {
         console.log("No slots");
       } else {
         console.log("SLOTS AVAILABLE!!!");
