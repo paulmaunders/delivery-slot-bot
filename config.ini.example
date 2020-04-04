@@ -8,6 +8,9 @@ cron = '*/5 * * * *'
 tesco_username = email@example.com
 tesco_password = password
 
+delivery = true
+click_and_collect = false
+
 ; Set Pushover API token and user token(s) where you'd like to receive push notifications
 ; Download the Pushover app on your device and create an account
 ; Login in to your account at pushover.net and create an application/API token
