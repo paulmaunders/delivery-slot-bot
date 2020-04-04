@@ -28,14 +28,14 @@ async function run() {
     if (!("delivery" in config) || config.delivery) {
       const deliverySlots = await store.checkDeliveries(page);
       if (deliverySlots) {
-        sendNotifications(config, "Delivery slots", deliverySlots);
+        await sendNotifications(config, "Delivery slots", deliverySlots);
       }
     }
 
     if (config.click_and_collect) {
       const collectionSlots = await store.checkCollections(page);
       if (collectionSlots) {
-        sendNotifications(config, "Collection slots", collectionSlots);
+        await sendNotifications(config, "Collection slots", collectionSlots);
       }
     }
   } catch (err) {
