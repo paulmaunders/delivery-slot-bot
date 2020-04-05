@@ -5,12 +5,8 @@ const schedule = require("node-schedule");
 const yargs = require("yargs");
 
 const { getBrowser } = require("./puppeteer-utils");
-const {
-  sendNotifications: sendPushoverNotifications,
-} = require("./notifications/pushover");
-const {
-  sendNotifications: sendMacSpeakNotifications,
-} = require("./notifications/mac-speak");
+const { PushoverNotifier } = require("./notifications/pushover");
+const { MacSpeakNotifier } = require("./notifications/mac-speak");
 const { TescoStore } = require("./stores/tesco");
 
 // Read config
@@ -23,16 +19,16 @@ if (config.tesco_username) {
 }
 
 if (config.pushover_api_token) {
-  notifiers.push(sendPushoverNotifications);
+  notifiers.push(new PushoverNotifier(config));
 }
 
 if (config.mac_speak) {
-  notifiers.push(sendMacSpeakNotifications);
+  notifiers.push(new MacSpeakNotifier());
 }
 
-async function sendNotifications(config, type, slotDates) {
+async function sendNotifications(type, slotDates) {
   await Promise.all(
-    notifiers.map((sendFunction) => sendFunction(config, type, slotDates))
+    notifiers.map((notifier) => notifier.sendNotifications(type, slotDates))
   );
 }
 
@@ -54,7 +50,6 @@ async function run() {
         const deliverySlots = await store.checkDeliveries(page);
         if (deliverySlots.length > 0) {
           await sendNotifications(
-            config,
             `${store.name} delivery slots`,
             deliverySlots
           );
@@ -65,7 +60,6 @@ async function run() {
         const collectionSlots = await store.checkCollections(page);
         if (collectionSlots.length > 0) {
           await sendNotifications(
-            config,
             `${store.name} collection slots`,
             collectionSlots
           );
