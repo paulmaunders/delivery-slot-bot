@@ -133,7 +133,7 @@ class TescoStore {
       console.log("Opening " + slotDate.url + " [" + slotDate.date + "]");
       await goto(page, slotDate.url);
 
-      const deliverySlots = await page.$$(".slot-list--item .available");
+      const deliverySlots = await page.$$(".slot-list--item.available");
 
       if (deliverySlots.length == 0) {
         console.log("No slots");
