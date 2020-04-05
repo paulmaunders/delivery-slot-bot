@@ -50,6 +50,11 @@ The script should output a list of dates, and whether any slots are available, e
     
 If a slot is found, it will send an alert to your device with a screenshot of the page so you can confirm.
 
+## Testing push notifications
+We recommend you test the push notifications are configured correctly with 
+
+    node test-push.js
+
 ## Automation
 
 The script by default runs its own cron based on the `cron` setting of the config.ini.
