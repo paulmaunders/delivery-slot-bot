@@ -11,15 +11,28 @@ function getBrowser() {
 }
 
 /**
+ * @param {puppeteer.Page} page
  * @param {puppeteer.Response} response
  */
-async function assertResponseOk(response) {
+async function assertResponseOk(page, response) {
   if (response.ok()) {
     return;
   }
-  throw {
-    message: `error: unexpected http response status ${response.status()} ${response.statusText()} with body:\n${await response.text()}\n`,
-  };
+
+  const errorTextElement = await page.$("p.ui-component__notice__error-text");
+  if (errorTextElement) {
+    const errorText = await page.evaluate(
+      (element) => element.innerText,
+      errorTextElement
+    );
+    throw {
+      message: `error: unexpected http response status ${response.status()} ${response.statusText()} with error text: ${errorText}`,
+    };
+  } else {
+    throw {
+      message: `error: unexpected http response status ${response.status()} ${response.statusText()} with body:\n${await response.text()}\n`,
+    };
+  }
 }
 
 /**
@@ -27,7 +40,7 @@ async function assertResponseOk(response) {
  * @param {string} url
  */
 async function goto(page, url) {
-  await assertResponseOk(await page.goto(url));
+  await assertResponseOk(page, await page.goto(url));
 }
 
 /**
@@ -36,6 +49,7 @@ async function goto(page, url) {
  */
 async function clickAndWaitForNavigation(page, selector) {
   await assertResponseOk(
+    page,
     (await Promise.all([page.waitForNavigation(), page.click(selector)]))[0]
   );
 }
