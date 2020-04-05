@@ -14,9 +14,7 @@ const loginUrl = "https://secure.tesco.com/account/en-GB/login";
 async function assertLoginSuccess(page) {
   if (page.url().startsWith(loginUrl)) {
     throw {
-      message: `error: Auth failed. Please check details are correct in config.ini, ${
-        page.url
-      } ${await page.content()}`,
+      message: `error: Auth failed. Please check details are correct in config.ini, ${page.url()} ${await page.content()}`,
     };
   }
 }
@@ -30,6 +28,7 @@ class TescoStore {
     this.username = username;
     this.password = password;
     this.cookieStore = new CookieStore();
+    this.name = "Tesco";
   }
 
   /**
