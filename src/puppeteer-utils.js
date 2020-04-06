@@ -19,7 +19,9 @@ async function assertResponseOk(page, response) {
     return;
   }
 
-  const errorTextElement = await page.$("p.ui-component__notice__error-text");
+  const errorTextElement =
+    (await page.$("p.ui-component__notice__error-text")) ||
+    (await page.$("section.error-container"));
   if (errorTextElement) {
     const errorText = await page.evaluate(
       (element) => element.innerText,
