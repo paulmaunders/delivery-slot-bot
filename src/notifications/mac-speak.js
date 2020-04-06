@@ -2,7 +2,7 @@
 const { exec } = require("child_process");
 
 class MacSpeakNotifier {
-  sendNotifications(_config, type, _slotDates) {
+  sendNotifications(type, _slotDates) {
     const myAlert = `Alert! Alert! Alert! We have ${type}!`;
     exec("say " + myAlert, function (error, stdout, stderr) {
       console.log("stdout: " + stdout);
