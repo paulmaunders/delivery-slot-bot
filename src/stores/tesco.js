@@ -13,9 +13,20 @@ const loginUrl = "https://secure.tesco.com/account/en-GB/login";
  */
 async function assertLoginSuccess(page) {
   if (page.url().startsWith(loginUrl)) {
-    throw {
-      message: `error: Auth failed. Please check details are correct in config.ini, ${page.url()} ${await page.content()}`,
-    };
+    const errorTextElement = await page.$("p.ui-component__notice__error-text");
+    if (errorTextElement) {
+      const errorText = await page.evaluate(
+        (element) => element.innerText,
+        errorTextElement
+      );
+      throw {
+        message: `error: Auth failed. Please check details are correct in config.ini, with reason: ${errorText}`,
+      };
+    } else {
+      throw {
+        message: `error: Auth failed. Please check details are correct in config.ini`,
+      };
+    }
   }
 }
 
