@@ -1,4 +1,3 @@
-// @ts-check
 class CookieStore {
   constructor() {
     this.store = null;

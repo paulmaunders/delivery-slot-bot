@@ -1,9 +1,18 @@
 {
   "compilerOptions": {
-    "outDir": "./dist/",
-    "strictNullChecks": true,
+    "allowJs": true,
+    "baseUrl": ".",
+    "checkJs": true,
     "esModuleInterop": true,
     "module": "commonjs",
+    "outDir": "./dist/",
+    "paths": {
+      "*": [
+          "node_modules/*",
+          "src/@types/*"
+      ]
+    },
+    "strictNullChecks": true,
     "target": "es6",
     "types": ["node"],
   },

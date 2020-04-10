@@ -1,5 +1,7 @@
-// @ts-check
 const puppeteer = require("puppeteer");
+
+/** @typedef {import("puppeteer").Page} Page */
+/** @typedef {import("puppeteer").Response} Response */
 
 function getBrowser() {
   if (process.env.PUPPETEER_BROWSER_WS_ENDPOINT) {
@@ -11,10 +13,16 @@ function getBrowser() {
 }
 
 /**
- * @param {puppeteer.Page} page
- * @param {puppeteer.Response} response
+ * @param {Page} page
+ * @param {Response | null} response
  */
 async function assertResponseOk(page, response) {
+  if (!response) {
+    throw {
+      message: `error: unexpected page error not returning a response`,
+    };
+  }
+
   if (response.ok()) {
     return;
   }
@@ -38,7 +46,7 @@ async function assertResponseOk(page, response) {
 }
 
 /**
- * @param {puppeteer.Page} page
+ * @param {Page} page
  * @param {string} url
  */
 async function goto(page, url) {
@@ -46,7 +54,7 @@ async function goto(page, url) {
 }
 
 /**
- * @param {puppeteer.Page} page
+ * @param {Page} page
  * @param {string} selector
  */
 async function clickAndWaitForNavigation(page, selector) {

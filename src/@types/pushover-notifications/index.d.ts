@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-declare module "pushover-notifications" {
-  import { IncomingMessage } from "http";
+import { IncomingMessage } from "http";
 
+declare namespace Pushover {
   export type PushoverOptions = {
     token?: string;
     user?: string;
@@ -23,16 +23,16 @@ declare module "pushover-notifications" {
     priority?: number;
     sound?: string;
     timestamp?: string;
-    file?: string | { name: string; data: string };
+    file?: string | { name: string; data: string | Buffer };
   };
-
-  export class Pushover {
-    constructor(opts: PushoverOptions);
-    send(
-      opts: PushoverSendOptions,
-      callback: (error: any, res: IncomingMessage) => void
-    ): void;
-  }
-
-  export default Pushover;
 }
+
+declare class Pushover {
+  constructor(opts: Pushover.PushoverOptions);
+  send(
+    opts: Pushover.PushoverSendOptions,
+    callback: (error: any, res: IncomingMessage) => void
+  ): void;
+}
+
+export = Pushover;

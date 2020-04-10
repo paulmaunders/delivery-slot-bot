@@ -1,4 +1,3 @@
-// @ts-check
 const fs = require("fs");
 const ini = require("ini");
 const schedule = require("node-schedule");
@@ -11,7 +10,13 @@ const { TescoStore } = require("./stores/tesco");
 
 // Read config
 const config = ini.parse(fs.readFileSync("./config.ini", "utf-8"));
+/**
+ * @type {import("./index").Store[]}
+ */
 const stores = [];
+/**
+ * @type {import("./index").Notifier[]}
+ */
 const notifiers = [];
 
 if (config.tesco_username) {
