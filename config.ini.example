@@ -3,6 +3,8 @@ output_dir = /tmp/delivery-slot-bot
 
 ; Optional internal cron schedule. If not supplied, runs just once
 cron = '*/5 * * * *'
+; Optional User-Agent request header change. If not supplied, uses the browser default (with "Headless" removed)
+;useragent = 
 
 ; If you want to check Tesco, enter your login details here, and remove the initial ;
 ;tesco_username = email@example.com
