@@ -34,6 +34,8 @@ async function sendNotifications(type, slotDates) {
 
 async function run() {
   const browser = await getBrowser();
+  const userAgent =
+    config.useragent || (await browser.userAgent()).replace(/headless/i, "");
 
   // Log time
   const executiontime = Date.now();
@@ -43,6 +45,7 @@ async function run() {
   try {
     for (const store of stores) {
       const page = await browser.newPage();
+      await page.setUserAgent(userAgent);
       await page.setViewport({ width: 1366, height: 768 });
 
       // check delivery if either not configured or set to true
