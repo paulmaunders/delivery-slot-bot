@@ -21,7 +21,9 @@
     }],
     // disable the rule for all files
     "@typescript-eslint/explicit-function-return-type": "off",
-    "@typescript-eslint/no-var-requires": "off"
+
+    // disable rules requiring ES6 modules to be enabled
+    "@typescript-eslint/no-var-requires": "off",
   },
   "overrides": [
     {

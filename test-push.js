@@ -1,11 +1,6 @@
-// @ts-check
 const fs = require("fs");
 const ini = require("ini");
-const schedule = require("node-schedule");
-const puppeteer = require("puppeteer");
 const Push = require("pushover-notifications");
-const shell = require("shelljs");
-const yargs = require("yargs");
 
 // Read config
 const config = ini.parse(fs.readFileSync("./config.ini", "utf-8"));

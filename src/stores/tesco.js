@@ -1,4 +1,3 @@
-// @ts-check
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const puppeteer = require("puppeteer");
 const { CookieStore } = require("../cookie-store");
@@ -8,8 +7,11 @@ const deliveryUrl = "https://www.tesco.com/groceries/en-GB/slots/delivery";
 const collectionUrl = "https://www.tesco.com/groceries/en-GB/slots/collection";
 const loginUrl = "https://secure.tesco.com/account/en-GB/login";
 
+/** @typedef {import("puppeteer").Page} Page */
+/** @typedef {import("../index").SlotDate} SlotDate*/
+
 /**
- * @param {puppeteer.Page} page
+ * @param {Page} page
  */
 async function assertLoginSuccess(page) {
   if (page.url().startsWith(loginUrl)) {
@@ -43,7 +45,7 @@ class TescoStore {
   }
 
   /**
-   * @param {puppeteer.Page} page
+   * @param {Page} page
    * @param {string} url
    */
   async login(page, url) {
@@ -64,7 +66,7 @@ class TescoStore {
   }
 
   /**
-   * @param {puppeteer.Page} page
+   * @param {Page} page
    * @param {string} url
    */
   async start(page, url) {
@@ -95,7 +97,8 @@ class TescoStore {
   }
 
   /**
-   * @param {puppeteer.Page} page
+   * @param {Page} page
+   * @returns {Promise<SlotDate[]>}
    */
   async checkDeliveries(page) {
     await this.start(page, deliveryUrl);
@@ -103,7 +106,8 @@ class TescoStore {
   }
 
   /**
-   * @param {puppeteer.Page} page
+   * @param {Page} page
+   * @returns {Promise<SlotDate[]>}
    */
   async checkCollections(page) {
     await this.start(page, collectionUrl);
@@ -111,7 +115,7 @@ class TescoStore {
   }
 
   /**
-   * @param {puppeteer.Page} page
+   * @param {Page} page
    * @returns {Promise<Buffer>}
    */
   async getScreenshot(page) {
@@ -124,7 +128,8 @@ class TescoStore {
   }
 
   /**
-   * @param {puppeteer.Page} page
+   * @param {Page} page
+   * @returns {Promise<SlotDate[]>}
    */
   async getSlots(page) {
     // Look for delivery pages
@@ -140,6 +145,10 @@ class TescoStore {
     const foundSlotDates = [];
 
     for (const slotDate of slotDates) {
+      if (!slotDate.date) {
+        continue;
+      }
+
       console.log("Opening " + slotDate.url + " [" + slotDate.date + "]");
       await goto(page, slotDate.url);
 
