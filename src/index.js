@@ -8,10 +8,13 @@ const { PushoverNotifier } = require("./notifications/pushover");
 const { MacSpeakNotifier } = require("./notifications/mac-speak");
 const { TescoStore } = require("./stores/tesco");
 
+/** @typedef {import("./index").Store} Store */
+/** @typedef {import("./index").SlotDate} SlotDate */
+
 // Read config
 const config = ini.parse(fs.readFileSync("./config.ini", "utf-8"));
 /**
- * @type {import("./index").Store[]}
+ * @type {Store[]}
  */
 const stores = [];
 /**
@@ -31,9 +34,25 @@ if (config.mac_speak) {
   notifiers.push(new MacSpeakNotifier());
 }
 
-async function sendNotifications(type, slotDates) {
+/**
+ * @param {Store} store
+ * @param {string} type
+ * @param {SlotDate[]} slotDates
+ */
+async function sendNotifications(store, type, slotDates) {
+  if (slotDates.length == 0) {
+    return;
+  }
+
+  slotDates.forEach((slotdate) => {
+    console.log(`${store.name} ${type} ${slotdate.date} slots:`);
+    console.log(slotdate.slots);
+  });
+
   await Promise.all(
-    notifiers.map((notifier) => notifier.sendNotifications(type, slotDates))
+    notifiers.map((notifier) =>
+      notifier.sendNotifications(store, type, slotDates)
+    )
   );
 }
 
@@ -55,23 +74,19 @@ async function run() {
 
       // check delivery if either not configured or set to true
       if (!("delivery" in config) || config.delivery) {
-        const deliverySlots = await store.checkDeliveries(page);
-        if (deliverySlots.length > 0) {
-          await sendNotifications(
-            `${store.name} delivery slots`,
-            deliverySlots
-          );
-        }
+        await sendNotifications(
+          store,
+          "delivery",
+          await store.checkDeliveries(page)
+        );
       }
 
       if (config.click_and_collect) {
-        const collectionSlots = await store.checkCollections(page);
-        if (collectionSlots.length > 0) {
-          await sendNotifications(
-            `${store.name} collection slots`,
-            collectionSlots
-          );
-        }
+        await sendNotifications(
+          store,
+          "collection",
+          await store.checkCollections(page)
+        );
       }
     }
   } catch (err) {

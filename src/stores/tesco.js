@@ -1,5 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const puppeteer = require("puppeteer");
 const { CookieStore } = require("../cookie-store");
 const { goto, clickAndWaitForNavigation } = require("../puppeteer-utils");
 
@@ -8,6 +6,7 @@ const collectionUrl = "https://www.tesco.com/groceries/en-GB/slots/collection";
 const loginUrl = "https://secure.tesco.com/account/en-GB/login";
 
 /** @typedef {import("puppeteer").Page} Page */
+/** @typedef {import("../index").Slot} Slot */
 /** @typedef {import("../index").SlotDate} SlotDate*/
 
 /**
@@ -152,14 +151,38 @@ class TescoStore {
       console.log("Opening " + slotDate.url + " [" + slotDate.date + "]");
       await goto(page, slotDate.url);
 
-      const deliverySlots = await page.$$(".slot-list--item.available");
+      const slotsRaw = await page.$$eval(
+        ".slot-list--item.available",
+        (elements) =>
+          elements.map((element) => {
+            const elementValue = /** @param {Element | null} element */ (
+              element
+            ) => element && element.getAttribute("value");
+            const start = elementValue(
+              element.querySelector('input[name="start"]')
+            );
+            const end = elementValue(
+              element.querySelector('input[name="end"]')
+            );
+            return start && end ? { start, end } : undefined;
+          })
+      );
+      const slots = slotsRaw
+        .filter(
+          /** @return {slot is {start: string, end: string}} */ (slot) => !!slot
+        )
+        .map(({ start, end }) => ({
+          start: new Date(start),
+          end: new Date(end),
+        }));
 
-      if (deliverySlots.length == 0) {
+      if (slots.length == 0) {
         console.log("No slots");
       } else {
         console.log("SLOTS AVAILABLE!!!");
         foundSlotDates.push({
           date: slotDate.date,
+          slots,
           screenshot: await this.getScreenshot(page),
         });
       }
