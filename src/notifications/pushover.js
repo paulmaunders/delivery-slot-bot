@@ -1,23 +1,26 @@
 const Pushover = require("pushover-notifications");
 
+/** @typedef {import("../index").Store} Store */
+
 class PushoverNotifier {
   constructor(config) {
     this.config = config;
   }
 
   /**
+   * @param {Store} store
    * @param {string} type
    * @param {import("../index").SlotDate[]} slotDates
    * @return {Promise<void>}
    */
-  async sendNotifications(type, slotDates) {
+  async sendNotifications(store, type, slotDates) {
     const pushover = new Pushover({
       token: this.config.pushover_api_token,
     });
 
     for (const slotDate of slotDates) {
       const msg = {
-        message: `${type} available between ${slotDate.date}`,
+        message: `${store.name} ${type} slots available between ${slotDate.date}`,
         title: "Delivery Slot Bot",
         sound: "magic",
         priority: 1,
