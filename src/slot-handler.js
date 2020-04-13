@@ -44,6 +44,37 @@ async function sendNotifications(store, type, slotDates) {
 }
 
 /**
+ * @param {SlotDate[]} slotDates
+ * @param {Slot[]} previousSlots
+ * @returns {SlotDate[] | undefined}
+ */
+function selectSlotDatesToSend(slotDates, previousSlots) {
+  if (
+    config.raw.alert_when_slots_gone &&
+    previousSlots.length > 0 &&
+    slotDates.length == 0
+  ) {
+    return [];
+  } else if (
+    !("alert_when_slots_still_available" in config.raw) ||
+    config.raw.alert_when_slots_still_available
+  ) {
+    if (slotDates.length > 0) {
+      return slotDates;
+    }
+  } else {
+    // alert only when new slots appear
+    const changedSlotDates = slotDates.filter((slotdate) =>
+      isNewSlots(slotdate.slots, previousSlots)
+    );
+
+    if (changedSlotDates.length > 0) {
+      return changedSlotDates;
+    }
+  }
+}
+
+/**
  * @param {Store} store
  * @param {string} type
  * @param {SlotDate[]} slotDates
@@ -62,29 +93,10 @@ async function handleSlots(store, type, slotDates) {
   const previousSlots = previousSlotStore.get(`${store.name}-${type}`) || [];
   previousSlotStore.set(`${store.name}-${type}`, allSlots);
 
-  if (
-    config.raw.alert_when_slots_gone &&
-    previousSlots.length > 0 &&
-    allSlots.length == 0
-  ) {
-    await sendNotifications(store, type, []);
-  } else if (
-    !("alert_when_slots_still_available" in config.raw) ||
-    config.raw.alert_when_slots_still_available
-  ) {
-    if (slotDates.length > 0) {
-      await sendNotifications(store, type, slotDates);
-    }
-  } else {
-    // alert only when new slots appear
-    const changedSlotDates = slotDates.filter((slotdate) =>
-      isNewSlots(slotdate.slots, previousSlots)
-    );
-
-    if (changedSlotDates.length > 0) {
-      await sendNotifications(store, type, changedSlotDates);
-    }
+  const slotDatesToSend = selectSlotDatesToSend(slotDates, previousSlots);
+  if (slotDatesToSend !== undefined) {
+    await sendNotifications(store, type, slotDatesToSend);
   }
 }
 
-module.exports = { handleSlots };
+module.exports = { selectSlotDatesToSend, handleSlots };

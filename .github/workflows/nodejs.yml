@@ -26,6 +26,7 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - run: yarn install --frozen-lockfile
     #- run: yarn build
+    - run: cp config.ini.example config.ini
     - run: yarn test
       env:
         CI: true
