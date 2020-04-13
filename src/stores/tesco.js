@@ -121,6 +121,12 @@ class TescoStore {
     // Take a screenshot
     console.log("Taking screenshot");
 
+    const element = await page.$("#slot-matrix");
+
+    if (element) {
+      return await element.screenshot({});
+    }
+
     return await page.screenshot({
       fullPage: true,
     });
