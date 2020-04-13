@@ -13,9 +13,10 @@ cron = '*/5 * * * *'
 delivery = true
 click_and_collect = false
 
-; If true, only alerts the first time new slots show up (only when using internal cron scheduler)
-; If false or when using an external cron scheduler, alerts even if previously alerted to the same slots
-alert_when_new_slots_available = true
+; If true or when using an external cron sheduler, alerts even if previously alerted to the same slots
+; If false, only alerts the first time new slots show up (only when using internal cron scheduler)
+; If not specified, defaults to true for backwards compatibility
+alert_when_slots_still_available = false
 
 ; Sends a notification if all slots previously alerted to have gone
 ; Only supported when internal cron sheduler is used

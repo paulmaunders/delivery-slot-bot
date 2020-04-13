@@ -68,7 +68,15 @@ async function handleSlots(store, type, slotDates) {
     allSlots.length == 0
   ) {
     await sendNotifications(store, type, []);
-  } else if (config.raw.alert_when_new_slots_available) {
+  } else if (
+    !("alert_when_slots_still_available" in config.raw) ||
+    config.raw.alert_when_slots_still_available
+  ) {
+    if (slotDates.length > 0) {
+      await sendNotifications(store, type, slotDates);
+    }
+  } else {
+    // alert only when new slots appear
     const changedSlotDates = slotDates.filter((slotdate) =>
       isNewSlots(slotdate.slots, previousSlots)
     );
@@ -76,8 +84,6 @@ async function handleSlots(store, type, slotDates) {
     if (changedSlotDates.length > 0) {
       await sendNotifications(store, type, changedSlotDates);
     }
-  } else if (slotDates.length > 0) {
-    await sendNotifications(store, type, slotDates);
   }
 }
 
