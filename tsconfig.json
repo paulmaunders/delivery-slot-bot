@@ -14,9 +14,10 @@
     },
     "strictNullChecks": true,
     "target": "es6",
-    "types": ["node"],
+    "types": ["node", "jest"],
   },
   "include": [
-    "./src/"
+    "./src/",
+    "./__tests__/"
   ]
 }

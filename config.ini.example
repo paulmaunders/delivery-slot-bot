@@ -4,7 +4,7 @@ output_dir = /tmp/delivery-slot-bot
 ; Optional internal cron schedule. If not supplied, runs just once
 cron = '*/5 * * * *'
 ; Optional User-Agent request header change. If not supplied, uses the browser default (with "Headless" removed)
-;useragent = 
+;useragent =
 
 ; If you want to check Tesco, enter your login details here, and remove the initial ;
 ;tesco_username = email@example.com
@@ -13,13 +13,22 @@ cron = '*/5 * * * *'
 delivery = true
 click_and_collect = false
 
+; If true or when using an external cron sheduler, alerts even if previously alerted to the same slots
+; If false, only alerts the first time new slots show up (only when using internal cron scheduler)
+; If not specified, defaults to true for backwards compatibility
+alert_when_slots_still_available = false
+
+; Sends a notification if all slots previously alerted to have gone
+; Only supported when internal cron sheduler is used
+alert_when_slots_gone = false
+
 ; Set Pushover API token and user token(s) where you'd like to receive push notifications
 ; Download the Pushover app on your device and create an account
 ; Login in to your account at pushover.net and create an application/API token
-pushover_api_token = apitoken 
+pushover_api_token = apitoken
 ; List the user keys who wish to receive alerts. If you only need 1, delete the second line.
 pushover_notification_users[] = user1key
-pushover_notification_users[] = user2key 
+pushover_notification_users[] = user2key
 
 ; Set to true to have MacOS speak out "Alert! Alert! Alert! We have Tesco delivery slots!" on notifications
 mac_speak = false

@@ -8,6 +8,22 @@ class PushoverNotifier {
   }
 
   /**
+   * @param {Pushover} pushover
+   * @param {Pushover.PushoverSendOptions} msg
+   */
+  sendMessage(pushover, msg) {
+    for (const user of this.config.pushover_notification_users) {
+      pushover.send({ ...msg, user }, function (err, result) {
+        if (err) {
+          throw err;
+        }
+
+        console.log(result);
+      });
+    }
+  }
+
+  /**
    * @param {Store} store
    * @param {string} type
    * @param {import("../index").SlotDate[]} slotDates
@@ -18,25 +34,24 @@ class PushoverNotifier {
       token: this.config.pushover_api_token,
     });
 
-    for (const slotDate of slotDates) {
-      const msg = {
-        message: `${store.name} ${type} slots available between ${slotDate.date}`,
+    if (slotDates.length == 0) {
+      this.sendMessage(pushover, {
+        message: `${store.name} ${type} slots no longer available`,
         title: "Delivery Slot Bot",
-        sound: "magic",
+        sound: "falling",
         priority: 1,
-        file: {
-          name: `${slotDate.date}.png`,
-          data: slotDate.screenshot,
-        },
-      };
-
-      for (const user of this.config.pushover_notification_users) {
-        pushover.send({ ...msg, user }, function (err, result) {
-          if (err) {
-            throw err;
-          }
-
-          console.log(result);
+      });
+    } else {
+      for (const slotDate of slotDates) {
+        this.sendMessage(pushover, {
+          message: `${store.name} ${type} slots available between ${slotDate.date}`,
+          title: "Delivery Slot Bot",
+          sound: "magic",
+          priority: 1,
+          file: {
+            name: `${slotDate.date}.png`,
+            data: slotDate.screenshot,
+          },
         });
       }
     }
