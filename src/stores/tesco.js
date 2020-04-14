@@ -158,7 +158,7 @@ class TescoStore {
       await goto(page, slotDate.url);
 
       const slotsRaw = await page.$$eval(
-        ".slot-list--item.available",
+        ".slot-grid--item.available",
         (elements) =>
           elements.map((element) => {
             const elementValue = /** @param {Element | null} element */ (
