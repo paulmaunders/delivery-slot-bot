@@ -1,5 +1,6 @@
 const puppeteer = require("puppeteer");
 
+/** @typedef {import("puppeteer").DirectNavigationOptions} DirectNavigationOptions */
 /** @typedef {import("puppeteer").Page} Page */
 /** @typedef {import("puppeteer").Response} Response */
 
@@ -48,9 +49,10 @@ async function assertResponseOk(page, response) {
 /**
  * @param {Page} page
  * @param {string} url
+ * @param {DirectNavigationOptions | undefined } options
  */
-async function goto(page, url) {
-  await assertResponseOk(page, await page.goto(url));
+async function goto(page, url, options = undefined) {
+  await assertResponseOk(page, await page.goto(url, options));
 }
 
 /**
