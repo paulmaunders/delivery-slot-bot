@@ -11,7 +11,7 @@ class PushoverNotifier {
    * @param {Pushover} pushover
    * @param {Pushover.PushoverSendOptions} msg
    */
-  sendMessage(pushover, msg) {
+  _sendMessage(pushover, msg) {
     for (const user of this.config.pushover_notification_users) {
       pushover.send({ ...msg, user }, function (err, result) {
         if (err) {
@@ -35,7 +35,7 @@ class PushoverNotifier {
     });
 
     if (slotDates.length == 0) {
-      this.sendMessage(pushover, {
+      this._sendMessage(pushover, {
         message: `${store.name} ${type} slots no longer available`,
         title: "Delivery Slot Bot",
         sound: "falling",
@@ -43,7 +43,7 @@ class PushoverNotifier {
       });
     } else {
       for (const slotDate of slotDates) {
-        this.sendMessage(pushover, {
+        this._sendMessage(pushover, {
           message: `${store.name} ${type} slots available between ${slotDate.date}`,
           title: "Delivery Slot Bot",
           sound: "magic",
@@ -55,6 +55,22 @@ class PushoverNotifier {
         });
       }
     }
+  }
+
+  /**
+   * @param {string} message
+   */
+  async sendMessage(message) {
+    const pushover = new Pushover({
+      token: this.config.pushover_api_token,
+    });
+
+    this._sendMessage(pushover, {
+      message,
+      title: "Delivery Slot Bot",
+      sound: "magic", // optional
+      priority: 1,
+    });
   }
 }
 

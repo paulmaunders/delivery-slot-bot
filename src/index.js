@@ -46,5 +46,10 @@ yargs
   .command("cron", "Runs with the internal cron scheduler", {}, () =>
     schedule.scheduleJob(config.raw.cron, () => run())
   )
+  .command("send-test", "Sends test notifications", {}, () => {
+    config.notifiers.forEach((notifier) =>
+      notifier.sendMessage("Test message")
+    );
+  })
   .command("*", "Runs one-off", {}, () => run())
   .help().argv;

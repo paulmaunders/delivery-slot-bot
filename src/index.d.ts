@@ -18,6 +18,7 @@ export declare interface Store {
 }
 
 export declare interface Notifier {
+  sendMessage(message: string): Promise<void>;
   sendNotifications(
     store: Store,
     type: string,

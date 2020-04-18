@@ -24,11 +24,14 @@ class MacSpeakNotifier {
    * @return {Promise<void>}
    */
   async sendNotifications(store, type, slotDates) {
-    exec("say " + this.getAlertMessage(store, type, slotDates), function (
-      error,
-      stdout,
-      stderr
-    ) {
+    await this.sendMessage(this.getAlertMessage(store, type, slotDates));
+  }
+
+  /**
+   * @param {string} message
+   */
+  async sendMessage(message) {
+    exec("say " + message, function (error, stdout, stderr) {
       console.log("stdout: " + stdout);
       console.log("stderr: " + stderr);
       if (error !== null) {
