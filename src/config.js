@@ -2,6 +2,7 @@ const fs = require("fs");
 const ini = require("ini");
 
 const { PushoverNotifier } = require("./notifications/pushover");
+const { TelegramNotifier } = require("./notifications/telegram");
 const { MacSpeakNotifier } = require("./notifications/mac-speak");
 const { TescoStore } = require("./stores/tesco");
 
@@ -31,6 +32,10 @@ if (rawConfig.tesco_username) {
 
 if (rawConfig.pushover_api_token) {
   notifiers.push(new PushoverNotifier(rawConfig));
+}
+
+if (rawConfig.telegram_api_token) {
+  notifiers.push(new TelegramNotifier(rawConfig));
 }
 
 if (rawConfig.mac_speak) {
