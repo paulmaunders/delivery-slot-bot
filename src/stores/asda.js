@@ -95,7 +95,8 @@ class AsdaStore {
     if (cookies) {
       await page.setCookie(...cookies);
       // optimistically go to delivery page in case of existing user session
-      await goto(page, url, { waitUntil: "networkidle0" });
+      await goto(page, url);
+      await page.waitForSelector(".asda-dialog, .co-slots__prices-by-time");
 
       // if login was required, reset cookies
       if (await this.isLoginRequired(page)) {
@@ -166,7 +167,8 @@ class AsdaStore {
 
     page.on("response", listener);
     console.log("Opening " + url);
-    await goto(page, url, { waitUntil: "networkidle0" });
+    await goto(page, url);
+    await page.waitForSelector(".co-slots__prices-by-time");
     page.off("response", listener);
 
     const foundSlotDates = [];
