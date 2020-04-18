@@ -6,7 +6,6 @@ const deliveryUrl = "https://groceries.asda.com/checkout/book-slot?tab=deliver";
 const collectionUrl =
   "https://groceries.asda.com/checkout/book-slot?tab=collect";
 const loginUrl = "https://www.asda.com/login";
-const loginRequiredUrl = "https://groceries.asda.com/";
 const slotUrl = "https://groceries.asda.com/api/v3/slot/view";
 
 /** @typedef {import("puppeteer").Page} Page */
@@ -76,6 +75,19 @@ class AsdaStore {
 
   /**
    * @param {Page} page
+   */
+  async isLoginRequired(page) {
+    return await page.$$eval(
+      ".asda-dialog",
+      (elements) =>
+        elements.filter(
+          (element) => element.getAttribute("data-auto-id") == "signInModal"
+        ).length > 0
+    );
+  }
+
+  /**
+   * @param {Page} page
    * @param {string} url
    */
   async start(page, url) {
@@ -86,7 +98,7 @@ class AsdaStore {
       await goto(page, url, { waitUntil: "networkidle0" });
 
       // if login was required, reset cookies
-      if (page.url() == loginRequiredUrl) {
+      if (await this.isLoginRequired(page)) {
         const client = await page.target().createCDPSession();
         await client.send("Network.clearBrowserCookies");
         this.cookieStore.set(null);
