@@ -77,12 +77,15 @@ class AsdaStore {
    * @param {Page} page
    */
   async isLoginRequired(page) {
-    return await page.$$eval(
-      ".asda-dialog",
-      (elements) =>
-        elements.filter(
-          (element) => element.getAttribute("data-auto-id") == "signInModal"
-        ).length > 0
+    return (
+      page.url().startsWith(loginUrl) ||
+      (await page.$$eval(
+        ".asda-dialog",
+        (elements) =>
+          elements.filter(
+            (element) => element.getAttribute("data-auto-id") == "signInModal"
+          ).length > 0
+      ))
     );
   }
 
@@ -96,7 +99,11 @@ class AsdaStore {
       await page.setCookie(...cookies);
       // optimistically go to delivery page in case of existing user session
       await goto(page, url);
-      await page.waitForSelector(".asda-dialog, .co-slots__prices-by-time");
+
+      await Promise.race([
+        page.waitForSelector(".asda-dialog, .co-slots__prices-by-time"),
+        page.waitForNavigation(),
+      ]);
 
       // if login was required, reset cookies
       if (await this.isLoginRequired(page)) {

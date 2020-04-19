@@ -20,6 +20,8 @@ services:
 
   chrome:
     image: browserless/chrome
+    environment:
+      CONNECTION_TIMEOUT: 300000 # 5 minutes
     restart: unless-stopped
 
 volumes:
