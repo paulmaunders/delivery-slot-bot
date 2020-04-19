@@ -34,5 +34,8 @@ pushover_api_token = apitoken
 pushover_notification_users[] = user1key
 pushover_notification_users[] = user2key
 
+; get accessToken from telegram [@BotFather](https://telegram.me/BotFather)
+; telegram_api_token = 'xxxxxx'
+
 ; Set to true to have MacOS speak out "Alert! Alert! Alert! We have Tesco delivery slots!" on notifications
 mac_speak = false
