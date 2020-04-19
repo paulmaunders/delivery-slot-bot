@@ -184,7 +184,9 @@ class AsdaStore {
       // the day of the month is at 12am in the region's timezone, but
       // represented in UTC, so needs to be aware of the timezone.
       // Otherwise, like UK BST would be off by one day 11pm the previous day
-      const tz = feed.data.nearest_collection_point.supported_timezone;
+      const tz = feed.data.nearest_collection_point
+        ? feed.data.nearest_collection_point.supported_timezone
+        : feed.data.slot_days[0].supported_timezone;
       const startDay = moment(feed.data.start_date).tz(tz).format("MMM D");
       const endDay = moment(feed.data.end_date).tz(tz).format("MMM D");
 
