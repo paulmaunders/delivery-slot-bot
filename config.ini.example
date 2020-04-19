@@ -10,6 +10,10 @@ cron = '*/5 * * * *'
 ;tesco_username = email@example.com
 ;tesco_password = password
 
+; If you want to check ASDA, enter your login details here, and remove the initial ;
+;asda_username = email@example.com
+;asda_password = password
+
 delivery = true
 click_and_collect = false
 
