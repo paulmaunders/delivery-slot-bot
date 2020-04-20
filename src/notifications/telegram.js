@@ -20,7 +20,7 @@ class TelegramNotifier {
     api.sendMessage({
       chat_id: chatId,
       text: msg,
-      parse_mode: "HTML"
+      parse_mode: "HTML",
     });
   }
 
