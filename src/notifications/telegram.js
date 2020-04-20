@@ -11,17 +11,11 @@ class TelegramNotifier {
 
   async sendMessage(msg) {
     const api = new telegram({ token: this.config.telegram_api_token });
-
-    api.getUpdates({}).then(function (data) {
-      api
-        .sendMessage({
-          chat_id: data[0].channel_post.chat.id,
-          text: msg,
-          parse_mode: "HTML",
-        })
-        .then(function (data) {
-          console.log(util.inspect(data, false, null));
-        });
+    const updates = await api.getUpdates({});
+    api.sendMessage({
+      chat_id: updates[0].channel_post.chat.id,
+      text: msg,
+      parse_mode: "HTML",
     });
   }
 
