@@ -1,6 +1,5 @@
 /*eslint @typescript-eslint/camelcase: ["error", {properties: "never"}]*/
 const telegram = require("telegram-bot-api");
-const util = require("util");
 
 /** @typedef {import("../index").Store} Store */
 
@@ -9,20 +8,34 @@ class TelegramNotifier {
     this.config = config;
   }
 
+  _extractChatIdFromUpdate(update) {
+    if (update.channel_post) {
+      return update.channel_post.chat.id;
+    } else if (update.message) {
+      return update.message.chat.id;
+    }
+  }
+
+  _sendMessage(api, chatId, msg) {
+    api.sendMessage({
+      chat_id: chatId,
+      text: msg,
+      parse_mode: "HTML",
+    });
+  }
+
   async sendMessage(msg) {
     const api = new telegram({ token: this.config.telegram_api_token });
-
-    api.getUpdates({}).then(function (data) {
-      api
-        .sendMessage({
-          chat_id: data[0].channel_post.chat.id,
-          text: msg,
-          parse_mode: "HTML",
-        })
-        .then(function (data) {
-          console.log(util.inspect(data, false, null));
-        });
-    });
+    const updates = await api.getUpdates({});
+    if (updates && updates.length != 0) {
+      const chatIds = updates.map((update) =>
+        this._extractChatIdFromUpdate(update)
+      );
+      const uniqueChatIds = chatIds.filter((v, i, a) => a.indexOf(v) === i);
+      for (const chatId of uniqueChatIds) {
+        this._sendMessage(api, chatId, msg);
+      }
+    }
   }
 
   /**
