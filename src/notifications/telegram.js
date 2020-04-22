@@ -6,7 +6,7 @@ const telegram = require("telegram-bot-api");
 class TelegramNotifier {
   constructor(config) {
     this.config = config;
-    this.chat_ids_cache = {};
+    this.chatIdsCache = {};
   }
 
   _extractChatIdFromUpdate(update) {
@@ -33,10 +33,10 @@ class TelegramNotifier {
         this._extractChatIdFromUpdate(update)
       );
       chatIds.forEach((chatId) => {
-        this.chat_ids_cache[chatId] = 1;
+        this.chatIdsCache[chatId] = 1;
       });
     }
-    Object.keys(this.chat_ids_cache).forEach((chatId) => {
+    Object.keys(this.chatIdsCache).forEach((chatId) => {
       this._sendMessage(api, chatId, msg);
     });
   }
