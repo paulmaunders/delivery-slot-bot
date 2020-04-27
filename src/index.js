@@ -19,7 +19,7 @@ async function runStore(store) {
   // Log time
   const executiontime = Date.now();
   const date = new Date(executiontime);
-  console.log(executiontime + " " + date.toUTCString());
+  console.log(executiontime + " - " + store.name + " - " + date.toUTCString());
 
   try {
     const page = await browser.newPage();
