@@ -1,5 +1,5 @@
 # delivery-slot-bot
-A puppeteer based bot to monitor supermarket online delivery slots. Currently it only works with Tesco.com and uses Pushover.net to send push notifications to your phone.
+A puppeteer based bot to monitor supermarket online delivery slots. Currently works with Tesco and ASDA and uses Pushover.net to send push notifications to your phone.
 ## Installation and configuration
 Clone this repository
   
@@ -18,8 +18,11 @@ Clone the example config to config.ini and add your account details
     
 Set the following values:
 
-* tesco_username - Your username for tesco.net 
-* tesco_password - Your password for tesco.net
+* tesco_username - Your username for tesco.com 
+* tesco_password - Your password for tesco.com
+
+* asda_username - Your username for asda.com 
+* asda_password - Your password for asda.com 
 
 To receive push notifications, you need to create an account with [pushover.net](https://pushover.net) and install the Pushover app on your phone.
 
