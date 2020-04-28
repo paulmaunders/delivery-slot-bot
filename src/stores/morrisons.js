@@ -2,8 +2,10 @@ const { CookieStore } = require("../cookie-store");
 const { goto, clickAndWaitForNavigation } = require("../puppeteer-utils");
 
 const deliveryUrl = "https://groceries.store.morrisons.com/delivery/home/slots";
-const collectionUrl = "https://groceries.store.morrisons.com/delivery/collection";
-const loginUrl = "https://accounts.groceries.morrisons.com/auth-service/sso/login"
+const collectionUrl =
+  "https://groceries.store.morrisons.com/delivery/collection";
+const loginUrl =
+  "https://accounts.groceries.morrisons.com/auth-service/sso/login";
 
 /** @typedef {import("puppeteer").Page} Page */
 /** @typedef {import("../index").Slot} Slot */
@@ -56,7 +58,10 @@ class MorrisonsStore {
     });
     await goto(page, `${loginUrl}?${loginParams.toString()}`);
     await page.type("#login-input", this.username);
-    await page.type("body > div.containerWrapper > div > div.content > div > div > div > div.login__regular > div > form > div:nth-child(2) > input[type=password]", this.password);
+    await page.type(
+      "body > div.containerWrapper > div > div.content > div > div > div > div.login__regular > div > form > div:nth-child(2) > input[type=password]",
+      this.password
+    );
     await clickAndWaitForNavigation(page, "#login-submit-button");
     await assertLoginSuccess(page);
 
@@ -131,9 +136,8 @@ class MorrisonsStore {
    * @returns {Promise<SlotDate[]>}
    */
   async getSlots(page) {
-
     const foundSlotDates = [];
-    const $html = await page.content();
+    // const $html = await page.content();
 
     // <span>First available slot</span><span>Sun 03 May 16:00 - 17:00</span>
     /*
