@@ -6,6 +6,7 @@ const { TelegramNotifier } = require("./notifications/telegram");
 const { MacSpeakNotifier } = require("./notifications/mac-speak");
 const { TescoStore } = require("./stores/tesco");
 const { AsdaStore } = require("./stores/asda");
+const { MorrisonsStore } = require("./stores/morrisons");
 
 /** @typedef {import("./index").Store} Store */
 /** @typedef {import("./index").SlotDate} SlotDate */
@@ -33,6 +34,10 @@ if (rawConfig.tesco_username) {
 
 if (rawConfig.asda_username) {
   stores.push(new AsdaStore(rawConfig.asda_username, rawConfig.asda_password));
+}
+
+if (rawConfig.morrisons_username) {
+  stores.push(new MorrisonsStore(rawConfig.morrisons_username, rawConfig.morrisons_password));
 }
 
 if (rawConfig.pushover_api_token) {
