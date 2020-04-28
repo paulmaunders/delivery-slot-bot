@@ -37,7 +37,12 @@ if (rawConfig.asda_username) {
 }
 
 if (rawConfig.morrisons_username) {
-  stores.push(new MorrisonsStore(rawConfig.morrisons_username, rawConfig.morrisons_password));
+  stores.push(
+    new MorrisonsStore(
+      rawConfig.morrisons_username,
+      rawConfig.morrisons_password
+    )
+  );
 }
 
 if (rawConfig.pushover_api_token) {
