@@ -27,11 +27,16 @@ async function assertLoginSuccess(page) {
       throw {
         message: `error: Auth failed. Please check details are correct in config.ini, with reason: ${errorText}`,
       };
-    } else {
+    }
+    const recaptchaElement = await page.$("#recaptcha-container");
+    if (recaptchaElement) {
       throw {
-        message: `error: Auth failed. Please check details are correct in config.ini`,
+        message: `error: Auth failed. The website is thinks this could be a bot, and is showing a Recaptch check. Try logging in yourself, and this might go away`,
       };
     }
+    throw {
+      message: `error: Auth failed. Please check details are correct in config.ini`,
+    };
   }
 }
 
@@ -65,7 +70,9 @@ class AsdaStore {
     await page.click(".login-container form button.primary");
     await Promise.race([
       page.waitForNavigation(),
-      page.waitForSelector(".login-container .form-error"),
+      page.waitForSelector(
+        ".login-container .form-error, #recaptcha-container"
+      ),
     ]);
     await assertLoginSuccess(page);
 
