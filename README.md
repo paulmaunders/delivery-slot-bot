@@ -36,11 +36,12 @@ To receive push notifications, you need to create an account with [pushover.net]
 This may be caused by the lack of expected dependencies of Chromium, the internally installed browser
 Chrome is based on.
 
-In this case it may be easier to install Chromium/Chrome yourself and configure the bot to use it:
+In this case it may be easier to install Chromium/Chrome/Firefox yourself and configure the bot to use it:
 
 in config.ini:
 
     browser_executable_path = /path/to/chrome
+    browser_product = either chrome or firefox
 
 ## Usage
 Run from inside the project folder

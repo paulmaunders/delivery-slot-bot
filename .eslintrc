@@ -24,6 +24,9 @@
 
     // disable rules requiring ES6 modules to be enabled
     "@typescript-eslint/no-var-requires": "off",
+
+    // disable rules requiring Typescript solutions
+    "@typescript-eslint/ban-ts-ignore": "off"
   },
   "overrides": [
     {
