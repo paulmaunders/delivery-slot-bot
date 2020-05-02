@@ -1,4 +1,5 @@
 const puppeteer = require("puppeteer");
+const config = require("./config");
 
 /** @typedef {import("puppeteer").DirectNavigationOptions} DirectNavigationOptions */
 /** @typedef {import("puppeteer").Page} Page */
@@ -10,7 +11,10 @@ function getBrowser() {
       browserWSEndpoint: process.env.PUPPETEER_BROWSER_WS_ENDPOINT,
     });
   }
-  return puppeteer.launch();
+  return puppeteer.launch({
+    executablePath: config.browserExecutablePath,
+    headless: config.browser_launch_headless,
+  });
 }
 
 /**

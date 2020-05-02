@@ -1,6 +1,11 @@
 ; Example config.ini for Delivery Slot Bot
 output_dir = /tmp/delivery-slot-bot
 
+; Path to the chrome browser executable. If not supplied, the bundle installed Chromium will be used
+;browser_executable_path =
+; Whether to run without a GUI window opening. If not supplied, treated as true
+browser_launch_headless = true
+
 ; Optional internal cron schedule. If not supplied, runs just once
 cron = '*/5 * * * *'
 ; Optional User-Agent request header change. If not supplied, uses the browser default (with "Headless" removed)

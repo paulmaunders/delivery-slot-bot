@@ -29,6 +29,19 @@ To receive push notifications, you need to create an account with [pushover.net]
 * pushover_api_token - API token from Pushover
 * pushover_notification_users[] - Array of Pushover user keys who wish to receive push notifications
 
+## Alternative installation
+
+### If you get: Error: Failed to launch chrome! on yarn start
+
+This may be caused by the lack of expected dependencies of Chromium, the internally installed browser
+Chrome is based on.
+
+In this case it may be easier to install Chromium/Chrome yourself and configure the bot to use it:
+
+in config.ini:
+
+    browser_executable_path = /path/to/chrome
+
 ## Usage
 Run from inside the project folder
 
