@@ -14,7 +14,7 @@ function getBrowser() {
     });
   }
   return puppeteer.launch({
-    executablePath: config.browserExecutablePath,
+    executablePath: config.browser_executable_path,
     headless: config.browser_launch_headless,
     // @ts-ignore
     product: config.browser_product,

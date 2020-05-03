@@ -17,9 +17,7 @@ const slots = [
 
 describe("slot-handler", () => {
   it("selects changed slots", () => {
-    config.raw = {
-      alert_when_slots_still_available: false,
-    };
+    config.alert_when_slots_still_available = false;
 
     const slotDates = [
       {
@@ -35,9 +33,7 @@ describe("slot-handler", () => {
   });
 
   it("selects no unchanged slots", () => {
-    config.raw = {
-      alert_when_slots_still_available: false,
-    };
+    config.alert_when_slots_still_available = false;
 
     const slotDates = [
       {
@@ -53,9 +49,7 @@ describe("slot-handler", () => {
   });
 
   it("selects all slots", () => {
-    config.raw = {
-      alert_when_slots_still_available: true,
-    };
+    config.alert_when_slots_still_available = true;
 
     const slotDates = [
       {
@@ -71,9 +65,8 @@ describe("slot-handler", () => {
   });
 
   it("selects no slots", () => {
-    config.raw = {
-      alert_when_slots_still_available: true,
-    };
+    config.alert_when_slots_still_available = true;
+    config.alert_when_slots_gone = undefined;
 
     const slotDates = [];
 
@@ -83,9 +76,7 @@ describe("slot-handler", () => {
   });
 
   it("selects gone slots", () => {
-    config.raw = {
-      alert_when_slots_gone: true,
-    };
+    config.alert_when_slots_gone = true;
 
     const slotDates = [];
 
