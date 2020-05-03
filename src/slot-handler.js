@@ -1,4 +1,5 @@
 const config = require("./config");
+const notifiers = require("./notifiers");
 
 /** @typedef {import("./index").Store} Store */
 /** @typedef {import("./index").SlotDate} SlotDate */
@@ -37,7 +38,7 @@ const previousSlotStore = new Map();
  */
 async function sendNotifications(store, type, slotDates) {
   await Promise.all(
-    config.notifiers.map((notifier) =>
+    notifiers.map((notifier) =>
       notifier.sendNotifications(store, type, slotDates)
     )
   );
@@ -50,14 +51,14 @@ async function sendNotifications(store, type, slotDates) {
  */
 function selectSlotDatesToSend(slotDates, previousSlots) {
   if (
-    config.raw.alert_when_slots_gone &&
+    config.alert_when_slots_gone &&
     previousSlots.length > 0 &&
     slotDates.length == 0
   ) {
     return [];
   } else if (
-    !("alert_when_slots_still_available" in config.raw) ||
-    config.raw.alert_when_slots_still_available
+    !("alert_when_slots_still_available" in config) ||
+    config.alert_when_slots_still_available
   ) {
     if (slotDates.length > 0) {
       return slotDates;
