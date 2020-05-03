@@ -1,4 +1,5 @@
 const puppeteer = require("puppeteer");
+const config = require("./config");
 
 /** @typedef {import("puppeteer").DirectNavigationOptions} DirectNavigationOptions */
 /** @typedef {import("puppeteer").Page} Page */
@@ -8,9 +9,16 @@ function getBrowser() {
   if (process.env.PUPPETEER_BROWSER_WS_ENDPOINT) {
     return puppeteer.connect({
       browserWSEndpoint: process.env.PUPPETEER_BROWSER_WS_ENDPOINT,
+      // @ts-ignore
+      product: config.browser_product,
     });
   }
-  return puppeteer.launch();
+  return puppeteer.launch({
+    executablePath: config.browserExecutablePath,
+    headless: config.browser_launch_headless,
+    // @ts-ignore
+    product: config.browser_product,
+  });
 }
 
 /**
