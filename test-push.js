@@ -1,5 +1,5 @@
 // deprecated, will be removed once npm repository release sorted
 
-const config = require("./src/config");
+const notifiers = require("./src/notifiers");
 
-config.notifiers.forEach((notifier) => notifier.sendMessage("Test message"));
+notifiers.forEach((notifier) => notifier.sendMessage("Test message"));
