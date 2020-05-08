@@ -1,4 +1,5 @@
 const { CookieStore } = require("../cookie-store");
+const { StoreError } = require("../errors");
 const { goto, clickAndWaitForNavigation } = require("../puppeteer-utils");
 
 const deliveryUrl = "https://www.tesco.com/groceries/en-GB/slots/delivery";
@@ -20,13 +21,13 @@ async function assertLoginSuccess(page) {
         (element) => element.innerText,
         errorTextElement
       );
-      throw {
-        message: `error: Auth failed. Please check details are correct in config.ini, with reason: ${errorText}`,
-      };
+      throw new StoreError(
+        `Auth failed. Please check details are correct in config.ini, with reason: ${errorText}`
+      );
     } else {
-      throw {
-        message: `error: Auth failed. Please check details are correct in config.ini`,
-      };
+      throw new StoreError(
+        `Auth failed. Please check details are correct in config.ini`
+      );
     }
   }
 }

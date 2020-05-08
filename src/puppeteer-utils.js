@@ -1,5 +1,6 @@
 const puppeteer = require("puppeteer");
 const config = require("./config");
+const { StoreError } = require("./errors");
 
 /** @typedef {import("puppeteer").DirectNavigationOptions} DirectNavigationOptions */
 /** @typedef {import("puppeteer").Page} Page */
@@ -27,9 +28,7 @@ function getBrowser() {
  */
 async function assertResponseOk(page, response) {
   if (!response) {
-    throw {
-      message: `error: unexpected page error not returning a response`,
-    };
+    throw new StoreError("unexpected page error not returning a response");
   }
 
   if (response.ok()) {
@@ -44,13 +43,13 @@ async function assertResponseOk(page, response) {
       (element) => element.innerText,
       errorTextElement
     );
-    throw {
-      message: `error: unexpected http response status ${response.status()} ${response.statusText()} with error text: ${errorText}`,
-    };
+    throw new StoreError(
+      `unexpected http response status ${response.status()} ${response.statusText()} with error text: ${errorText}`
+    );
   } else {
-    throw {
-      message: `error: unexpected http response status ${response.status()} ${response.statusText()} with body:\n${await response.text()}\n`,
-    };
+    throw new StoreError(
+      `unexpected http response status ${response.status()} ${response.statusText()} with body:\n${await response.text()}\n`
+    );
   }
 }
 

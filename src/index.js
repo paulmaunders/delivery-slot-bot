@@ -2,6 +2,7 @@ const schedule = require("node-schedule");
 const yargs = require("yargs");
 
 const config = require("./config");
+const { StoreError } = require("./errors");
 const notifiers = require("./notifiers");
 const { getBrowser } = require("./puppeteer-utils");
 const { handleSlots } = require("./slot-handler");
@@ -40,7 +41,12 @@ async function runStore(store) {
       );
     }
   } catch (err) {
-    console.error(err.message);
+    if (err instanceof StoreError) {
+      console.error(`error: ${err.message}`);
+    } else {
+      console.error("unexpected error:");
+      console.error(err);
+    }
   } finally {
     await browser.close();
   }

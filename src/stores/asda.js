@@ -1,5 +1,6 @@
 const moment = require("moment-timezone");
 const { CookieStore } = require("../cookie-store");
+const { StoreError } = require("../errors");
 const { goto } = require("../puppeteer-utils");
 
 const deliveryUrl = "https://groceries.asda.com/checkout/book-slot?tab=deliver";
@@ -24,19 +25,19 @@ async function assertLoginSuccess(page) {
         (element) => element.innerText,
         errorTextElement
       );
-      throw {
-        message: `error: Auth failed. Please check details are correct in config.ini, with reason: ${errorText}`,
-      };
+      throw new StoreError(
+        `Auth failed. Please check details are correct in config.ini, with reason: ${errorText}`
+      );
     }
     const recaptchaElement = await page.$("#recaptcha-container");
     if (recaptchaElement) {
-      throw {
-        message: `error: Auth failed. The website is thinks this could be a bot, and is showing a Recaptch check. Try logging in yourself, and this might go away`,
-      };
+      throw new StoreError(
+        "Auth failed. The website is thinks this could be a bot, and is showing a Recaptch check. Try logging in yourself, and this might go away"
+      );
     }
-    throw {
-      message: `error: Auth failed. Please check details are correct in config.ini`,
-    };
+    throw new StoreError(
+      "Auth failed. Please check details are correct in config.ini"
+    );
   }
 }
 
