@@ -13,7 +13,12 @@ const { MacSpeakNotifier } = require("./notifications/mac-speak");
 const notifiers = [];
 
 if (config.pushover_api_token) {
-  notifiers.push(new PushoverNotifier(config));
+  notifiers.push(
+    new PushoverNotifier(
+      config.pushover_api_token,
+      config.pushover_notification_users
+    )
+  );
 }
 
 if (config.telegram_api_token) {

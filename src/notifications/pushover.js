@@ -3,24 +3,41 @@ const Pushover = require("pushover-notifications");
 /** @typedef {import("../index").Store} Store */
 
 class PushoverNotifier {
-  constructor(config) {
-    this.config = config;
+  /**
+   * @param {string} apiToken
+   * @param {string[]} users
+   */
+  constructor(apiToken, users) {
+    this.apiToken = apiToken;
+    this.users = users;
   }
 
   /**
-   * @param {Pushover} pushover
    * @param {Pushover.PushoverSendOptions} msg
    */
-  _sendMessage(pushover, msg) {
-    for (const user of this.config.pushover_notification_users) {
-      pushover.send({ ...msg, user }, function (err, result) {
-        if (err) {
-          throw err;
-        }
+  _sendMessage(msg) {
+    return Promise.all(
+      this.users.map((user) => this._sendPushoverMessage({ ...msg, user }))
+    );
+  }
 
-        console.log(result);
+  /**
+   * @param {Pushover.PushoverSendOptions} msg
+   */
+  _sendPushoverMessage(msg) {
+    return new Promise((resolve, reject) => {
+      const pushover = new Pushover({
+        token: this.apiToken,
       });
-    }
+      pushover.onerror = (err) => reject(err);
+      pushover.send(msg, function (err, result) {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(result);
+        }
+      });
+    });
   }
 
   /**
@@ -30,12 +47,8 @@ class PushoverNotifier {
    * @return {Promise<void>}
    */
   async sendNotifications(store, type, slotDates) {
-    const pushover = new Pushover({
-      token: this.config.pushover_api_token,
-    });
-
     if (slotDates.length == 0) {
-      this._sendMessage(pushover, {
+      this._sendMessage({
         message: `${store.name} ${type} slots no longer available`,
         title: "Delivery Slot Bot",
         sound: "falling",
@@ -43,7 +56,7 @@ class PushoverNotifier {
       });
     } else {
       for (const slotDate of slotDates) {
-        this._sendMessage(pushover, {
+        this._sendMessage({
           message: `${store.name} ${type} slots available between ${slotDate.date}`,
           title: "Delivery Slot Bot",
           sound: "magic",
@@ -61,11 +74,7 @@ class PushoverNotifier {
    * @param {string} message
    */
   async sendMessage(message) {
-    const pushover = new Pushover({
-      token: this.config.pushover_api_token,
-    });
-
-    this._sendMessage(pushover, {
+    this._sendMessage({
       message,
       title: "Delivery Slot Bot",
       sound: "magic", // optional

@@ -29,6 +29,7 @@ declare namespace Pushover {
 
 declare class Pushover {
   constructor(opts: Pushover.PushoverOptions);
+  onerror: (err: any, res: IncomingMessage) => void;
   send(
     opts: Pushover.PushoverSendOptions,
     callback: (error: any, res: IncomingMessage) => void
