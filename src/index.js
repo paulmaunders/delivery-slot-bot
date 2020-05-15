@@ -1,5 +1,6 @@
 const schedule = require("node-schedule");
 const yargs = require("yargs");
+const randomUseragent = require("random-useragent");
 
 const config = require("./config");
 const { StoreError } = require("./errors");
@@ -16,7 +17,11 @@ const stores = require("./stores");
 async function runStore(store) {
   const browser = await getBrowser();
   const userAgent =
-    config.useragent || (await browser.userAgent()).replace(/headless/i, "");
+    config.useragent ||
+    randomUseragent.getRandom(function (ua) {
+      return ua.browserName === "Chrome";
+    });
+  console.log("Useragent: " + userAgent);
 
   // Log time
   const executiontime = Date.now();
