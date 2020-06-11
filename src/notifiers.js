@@ -2,6 +2,7 @@ const config = require("./config");
 const { PushoverNotifier } = require("./notifications/pushover");
 const { TelegramNotifier } = require("./notifications/telegram");
 const { MacSpeakNotifier } = require("./notifications/mac-speak");
+const { FileNotifier } = require("./notifications/file");
 
 /** @typedef {import("./index").Store} Store */
 /** @typedef {import("./index").SlotDate} SlotDate */
@@ -27,6 +28,10 @@ if (config.telegram_api_token) {
 
 if (config.mac_speak) {
   notifiers.push(new MacSpeakNotifier());
+}
+
+if (config.save_files) {
+  notifiers.push(new FileNotifier());
 }
 
 module.exports = notifiers;

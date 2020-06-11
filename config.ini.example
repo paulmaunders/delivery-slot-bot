@@ -52,3 +52,6 @@ pushover_notification_users[] = user2key
 
 ; Set to true to have MacOS speak out "Alert! Alert! Alert! We have Tesco delivery slots!" on notifications
 mac_speak = false
+
+; Set to true to save JSON files and screenshots in the output directory
+save_files = true
