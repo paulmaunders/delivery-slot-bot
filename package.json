@@ -6,7 +6,7 @@
     "node-schedule": "^1.3.2",
     "puppeteer": "^3.0.2",
     "pushover-notifications": "^1.2.2",
-    "shelljs": "^0.8.4",
+    "shelljs": "^0.8.5",
     "telegram-bot-api": "^1.3.3",
     "util": "^0.12.3",
     "yargs": "^15.3.1"
